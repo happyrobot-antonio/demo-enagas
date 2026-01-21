@@ -1,0 +1,55 @@
+# Railway Ignore File
+# Archivos que no se deben incluir en el build
+
+# Node modules (se instalan en build)
+node_modules/
+**/node_modules/
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Build artifacts
+dist/
+build/
+**/dist/
+**/build/
+
+# Docker files (no necesarios en Railway)
+docker-compose.yml
+Dockerfile
+**/Dockerfile
+.dockerignore
+**/.dockerignore
+
+# Git
+.git/
+.gitignore
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# Testing
+coverage/
+.nyc_output/
+
+# Misc
+*.md
+!README.md
+test-demo.sh
+start.sh
+stop.sh
