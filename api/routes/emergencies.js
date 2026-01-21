@@ -6,23 +6,32 @@ const { query } = require('../config/database');
 router.post('/', async (req, res) => {
   try {
     const {
-      tipo_incidente,
-      ubicacion_completa,
-      contacto_llamante,
-      descripcion_situacion,
-      nivel_riesgo,
+      descripcion,
+      ubicacion,
+      nombre_llamante,
+      telefono_llamante,
+      tipo_incidente = 'ANOMALIA_CRITICA',
+      nivel_riesgo = 'MEDIO',
       coordenadas,
       municipio,
       provincia
     } = req.body;
 
-    // Validaciones
-    if (!tipo_incidente || !ubicacion_completa || !contacto_llamante || !descripcion_situacion || !nivel_riesgo) {
+    // Validación mínima: solo descripción y ubicación
+    if (!descripcion || !ubicacion) {
       return res.status(400).json({
-        error: 'Faltan campos requeridos',
-        required: ['tipo_incidente', 'ubicacion_completa', 'contacto_llamante', 'descripcion_situacion', 'nivel_riesgo']
+        error: 'Campos "descripcion" y "ubicacion" son requeridos'
       });
     }
+
+    // Valores por defecto
+    const ubicacion_completa = ubicacion;
+    const descripcion_situacion = descripcion;
+    const contacto_llamante = {
+      nombre: nombre_llamante || 'Usuario GTS',
+      telefono: telefono_llamante || '900123456',
+      empresa: 'Llamante externo'
+    };
 
     // Calcular tiempo estimado de llegada según ubicación y tipo
     const tiemposLlegada = {

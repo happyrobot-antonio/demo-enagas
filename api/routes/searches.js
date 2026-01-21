@@ -29,9 +29,9 @@ router.post('/', async (req, res) => {
       RETURNING *`,
       [
         searchQuery,
-        tipo_proceso,
-        usuario_solicitante,
-        contexto,
+        tipo_proceso || 'consulta_general',
+        usuario_solicitante || 'Usuario GTS',
+        contexto || 'Búsqueda desde agente de voz',
         resultados_count,
         documentos_encontrados ? JSON.stringify(documentos_encontrados) : null
       ]
