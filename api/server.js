@@ -3,7 +3,7 @@ const express = require('express');
 const cors = require('cors');
 const http = require('http');
 const socketIo = require('socket.io');
-const { checkConnection, initializeDatabase } = require('./config/database');
+const { checkConnection } = require('./config/database');
 
 // Importar rutas
 const ticketsRouter = require('./routes/tickets');
@@ -127,14 +127,6 @@ const startServer = async () => {
       console.log('Reintentando en 5 segundos...');
       setTimeout(startServer, 5000);
       return;
-    }
-
-    // Inicializar base de datos (crear tablas si no existen)
-    try {
-      await initializeDatabase();
-    } catch (error) {
-      console.error('⚠ Error al inicializar base de datos:', error.message);
-      console.log('Continuando de todas formas...');
     }
 
     // Iniciar servidor HTTP
