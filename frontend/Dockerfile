@@ -16,9 +16,20 @@ RUN npm run build
 # Production stage
 FROM nginx:alpine
 
+# Copiar archivos compilados
 COPY --from=build /app/dist /usr/share/nginx/html
-COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-EXPOSE 80
+# Copiar template de nginx (no el .conf directamente)
+COPY nginx.conf.template /etc/nginx/conf.d/default.conf.template
 
-CMD ["nginx", "-g", "daemon off;"]
+# Copiar script de entrypoint personalizado
+COPY docker-entrypoint.sh /docker-entrypoint.sh
+RUN chmod +x /docker-entrypoint.sh
+
+# Railway asigna PORT dinámicamente, local usa 80
+ENV PORT=80
+
+EXPOSE ${PORT}
+
+# Usar nuestro entrypoint personalizado
+ENTRYPOINT ["/docker-entrypoint.sh"]
