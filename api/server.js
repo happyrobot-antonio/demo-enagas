@@ -118,6 +118,13 @@ io.on('connection', (socket) => {
 // Iniciar servidor
 const PORT = process.env.PORT || 3000;
 
+// DEBUG: Ver qué variables llegan
+console.log('🔍 DEBUG - Variables de entorno:');
+console.log('PORT:', process.env.PORT);
+console.log('DB_PORT:', process.env.DB_PORT);
+console.log('Puerto que se usará:', PORT);
+console.log('---');
+
 const startServer = async () => {
   try {
     // Verificar conexión a base de datos
