@@ -47,18 +47,18 @@ BEGIN
     'PENDIENTE', 'CRITICA', NOW() + INTERVAL '5 minutes'
   ) RETURNING id INTO worker2;
   
-  -- Trabajador 3: Trabajo en caliente - EN_CURSO
+  -- Trabajador 3: Trabajo en caliente - PENDIENTE (CRÍTICO)
   INSERT INTO prl_workers (
     shift_id, nombre_completo, employee_id, empresa, categoria, telefono,
     tipo_trabajo, descripcion_tarea, ubicacion_trabajo,
     riesgos_identificados, equipos_proteccion_requeridos,
-    checklist_estado, prioridad, llamadas_intentadas, ultima_llamada_at
+    checklist_estado, prioridad, proxima_llamada_programada
   ) VALUES (
     shift_huelva, 'José Antonio Ferrer', 'SUB-0451', 'Montajes Industriales Sur', 'Soldador Certificado', '+34600333444',
     'TRABAJO_CALIENTE', 'Soldadura reparación brida Línea LP-04 tramo km 12.4', 'Zona Exterior - Tramo LP-04',
     ARRAY['TRABAJO_CALIENTE', 'INCENDIO', 'EXPLOSION', 'QUEMADURAS'], 
     ARRAY['Ropa ignífuga', 'Pantalla soldadura', 'Extintor CO2', 'Medidor explosividad', 'Permiso trabajo caliente'],
-    'EN_CURSO', 'CRITICA', 1, NOW() - INTERVAL '30 seconds'
+    'PENDIENTE', 'CRITICA', NOW() + INTERVAL '3 minutes'
   ) RETURNING id INTO worker3;
   
   -- Trabajador 4: Excavación - COMPLETADO
@@ -134,15 +134,6 @@ BEGIN
     145, TRUE, TRUE, 'CALL_' || gen_random_uuid()
   );
   
-  -- Crear llamada en curso para trabajador 3
-  INSERT INTO prl_safety_calls (
-    worker_id, telefono_destino, estado, programada_para, iniciada_at,
-    contacto_exitoso, call_id
-  ) VALUES (
-    worker3, '+34600333444', 'EN_CURSO', 
-    NOW() - INTERVAL '1 minute', NOW() - INTERVAL '30 seconds',
-    TRUE, 'CALL_' || gen_random_uuid()
-  );
   
   -- Crear incidente para trabajador 6 (no contactado)
   INSERT INTO prl_incidents (
