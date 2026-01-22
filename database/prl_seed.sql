@@ -40,7 +40,7 @@ BEGIN
     riesgos_identificados, equipos_proteccion_requeridos,
     checklist_estado, prioridad, proxima_llamada_programada
   ) VALUES (
-    shift_huelva, 'Laura Sánchez Pérez', 'ENG-3102', 'Enagás Transporte', 'Operaria Especializada', '+34600222333',
+    shift_huelva, 'Javier Sánchez Pérez', 'ENG-3102', 'Enagás Transporte', 'Operario Especializado', '+34600222333',
     'ESPACIO_CONFINADO', 'Mantenimiento interno Compresor C-201 - Limpieza de filtros', 'Sala Compresores - C-201',
     ARRAY['ESPACIO_CONFINADO', 'ATMOSFERA_TOXICA', 'FALTA_OXIGENO'], 
     ARRAY['Equipo respiración autónoma', 'Detector gases', 'Arnés rescate', 'Radio comunicación'],

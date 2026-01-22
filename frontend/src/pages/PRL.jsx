@@ -36,7 +36,22 @@ const PRL = () => {
 
         // Get workers for this shift
         const workersResponse = await api.get(`/api/prl/workers?shift_id=${shift.id}`)
-        setWorkers(workersResponse.workers || [])
+        const workersData = workersResponse.workers || []
+        
+        // Ordenar: primero críticos pendientes, luego pendientes, en curso, completados
+        const sortedWorkers = workersData.sort((a, b) => {
+          const priorityOrder = { 'CRITICA': 0, 'ALTA': 1, 'MEDIA': 2, 'BAJA': 3 }
+          const statusOrder = { 'PENDIENTE': 0, 'NO_CONTACTADO': 1, 'EN_CURSO': 2, 'COMPLETADO': 3 }
+          
+          // Primero por estado
+          if (statusOrder[a.checklist_estado] !== statusOrder[b.checklist_estado]) {
+            return statusOrder[a.checklist_estado] - statusOrder[b.checklist_estado]
+          }
+          // Luego por prioridad
+          return priorityOrder[a.prioridad] - priorityOrder[b.prioridad]
+        })
+        
+        setWorkers(sortedWorkers)
 
         // Get stats
         const statsResponse = await api.get(`/api/prl/shifts/${shift.id}/stats`)
@@ -229,7 +244,9 @@ const PRL = () => {
             {stats && (
               <div className="flex items-center gap-4 text-sm text-muted-foreground">
                 <span>{stats.completados} Completados</span>
+                <span className="text-muted-foreground">·</span>
                 <span>{stats.pendientes} Pendientes</span>
+                <span className="text-muted-foreground">·</span>
                 <span>{stats.en_curso} En Curso</span>
               </div>
             )}
