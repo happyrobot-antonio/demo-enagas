@@ -20,10 +20,13 @@ const Tickets = () => {
   const [expandedTicket, setExpandedTicket] = useState(null)
   const containerRef = useRef(null)
   const hasAnimated = useRef(false)
+  const isInitialLoad = useRef(true)
 
   const fetchTickets = useCallback(async () => {
     try {
-      setLoading(true)
+      if (isInitialLoad.current) {
+        setLoading(true)
+      }
       const params = {}
       if (filterEstado) params.estado = filterEstado
       if (filterPrioridad) params.prioridad = filterPrioridad
@@ -32,10 +35,16 @@ const Tickets = () => {
       if (response.success) {
         setTickets(response.tickets)
       }
-      setLoading(false)
+      if (isInitialLoad.current) {
+        setLoading(false)
+        isInitialLoad.current = false
+      }
     } catch (error) {
       console.error('Error al cargar tickets:', error)
-      setLoading(false)
+      if (isInitialLoad.current) {
+        setLoading(false)
+        isInitialLoad.current = false
+      }
     }
   }, [filterEstado, filterPrioridad])
 

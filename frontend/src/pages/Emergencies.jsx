@@ -19,10 +19,13 @@ const Emergencies = () => {
   const [filterRiesgo, setFilterRiesgo] = useState('')
   const containerRef = useRef(null)
   const hasAnimated = useRef(false)
+  const isInitialLoad = useRef(true)
 
   const fetchEmergencies = useCallback(async () => {
     try {
-      setLoading(true)
+      if (isInitialLoad.current) {
+        setLoading(true)
+      }
       const params = {}
       if (filterEstado) params.estado = filterEstado
       if (filterRiesgo) params.nivel_riesgo = filterRiesgo
@@ -31,10 +34,16 @@ const Emergencies = () => {
       if (response.success) {
         setEmergencies(response.emergencies)
       }
-      setLoading(false)
+      if (isInitialLoad.current) {
+        setLoading(false)
+        isInitialLoad.current = false
+      }
     } catch (error) {
       console.error('Error al cargar emergencias:', error)
-      setLoading(false)
+      if (isInitialLoad.current) {
+        setLoading(false)
+        isInitialLoad.current = false
+      }
     }
   }, [filterEstado, filterRiesgo])
 

@@ -18,10 +18,13 @@ const Searches = () => {
   const [filterTipoProceso, setFilterTipoProceso] = useState('')
   const containerRef = useRef(null)
   const hasAnimated = useRef(false)
+  const isInitialLoad = useRef(true)
 
   const fetchSearches = useCallback(async () => {
     try {
-      setLoading(true)
+      if (isInitialLoad.current) {
+        setLoading(true)
+      }
       const params = {}
       if (filterTipoProceso) params.tipo_proceso = filterTipoProceso
 
@@ -29,10 +32,16 @@ const Searches = () => {
       if (response.success) {
         setSearches(response.searches)
       }
-      setLoading(false)
+      if (isInitialLoad.current) {
+        setLoading(false)
+        isInitialLoad.current = false
+      }
     } catch (error) {
       console.error('Error al cargar búsquedas:', error)
-      setLoading(false)
+      if (isInitialLoad.current) {
+        setLoading(false)
+        isInitialLoad.current = false
+      }
     }
   }, [filterTipoProceso])
 

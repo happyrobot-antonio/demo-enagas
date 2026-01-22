@@ -19,10 +19,13 @@ const Transfers = () => {
   const [filterArea, setFilterArea] = useState('')
   const containerRef = useRef(null)
   const hasAnimated = useRef(false)
+  const isInitialLoad = useRef(true)
 
   const fetchTransfers = useCallback(async () => {
     try {
-      setLoading(true)
+      if (isInitialLoad.current) {
+        setLoading(true)
+      }
       const params = {}
       if (filterEstado) params.estado = filterEstado
       if (filterArea) params.area_destino = filterArea
@@ -31,10 +34,16 @@ const Transfers = () => {
       if (response.success) {
         setTransfers(response.transfers)
       }
-      setLoading(false)
+      if (isInitialLoad.current) {
+        setLoading(false)
+        isInitialLoad.current = false
+      }
     } catch (error) {
       console.error('Error al cargar transferencias:', error)
-      setLoading(false)
+      if (isInitialLoad.current) {
+        setLoading(false)
+        isInitialLoad.current = false
+      }
     }
   }, [filterEstado, filterArea])
 

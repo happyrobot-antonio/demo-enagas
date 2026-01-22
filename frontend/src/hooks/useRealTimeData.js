@@ -1,18 +1,25 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { api } from '../utils/api';
 
 export function useRealTimeEmergencies(interval = 2000) {
   const [emergencies, setEmergencies] = useState([]);
   const [loading, setLoading] = useState(true);
+  const isInitialLoad = useRef(true);
 
   const fetchEmergencies = useCallback(async () => {
     try {
       const data = await api.getActiveEmergencies();
       setEmergencies(data.emergencies || []);
-      setLoading(false);
+      if (isInitialLoad.current) {
+        setLoading(false);
+        isInitialLoad.current = false;
+      }
     } catch (error) {
       console.error('Error fetching emergencies:', error);
-      setLoading(false);
+      if (isInitialLoad.current) {
+        setLoading(false);
+        isInitialLoad.current = false;
+      }
     }
   }, []);
 
@@ -32,15 +39,22 @@ export function useRealTimeEmergencies(interval = 2000) {
 export function useRealTimeTickets(interval = 3000) {
   const [tickets, setTickets] = useState([]);
   const [loading, setLoading] = useState(true);
+  const isInitialLoad = useRef(true);
 
   const fetchTickets = useCallback(async () => {
     try {
       const data = await api.getRecentTickets();
       setTickets(data.tickets || []);
-      setLoading(false);
+      if (isInitialLoad.current) {
+        setLoading(false);
+        isInitialLoad.current = false;
+      }
     } catch (error) {
       console.error('Error fetching tickets:', error);
-      setLoading(false);
+      if (isInitialLoad.current) {
+        setLoading(false);
+        isInitialLoad.current = false;
+      }
     }
   }, []);
 
@@ -56,15 +70,22 @@ export function useRealTimeTickets(interval = 3000) {
 export function useRealTimeStats(interval = 5000) {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
+  const isInitialLoad = useRef(true);
 
   const fetchStats = useCallback(async () => {
     try {
       const data = await api.getStats();
       setStats(data.stats || data);
-      setLoading(false);
+      if (isInitialLoad.current) {
+        setLoading(false);
+        isInitialLoad.current = false;
+      }
     } catch (error) {
       console.error('Error fetching stats:', error);
-      setLoading(false);
+      if (isInitialLoad.current) {
+        setLoading(false);
+        isInitialLoad.current = false;
+      }
     }
   }, []);
 
@@ -80,15 +101,22 @@ export function useRealTimeStats(interval = 5000) {
 export function useRealTimeCalls(interval = 3000) {
   const [calls, setCalls] = useState([]);
   const [loading, setLoading] = useState(true);
+  const isInitialLoad = useRef(true);
 
   const fetchCalls = useCallback(async () => {
     try {
       const data = await api.getActiveCalls();
       setCalls(data.calls || []);
-      setLoading(false);
+      if (isInitialLoad.current) {
+        setLoading(false);
+        isInitialLoad.current = false;
+      }
     } catch (error) {
       console.error('Error fetching calls:', error);
-      setLoading(false);
+      if (isInitialLoad.current) {
+        setLoading(false);
+        isInitialLoad.current = false;
+      }
     }
   }, []);
 
@@ -104,15 +132,22 @@ export function useRealTimeCalls(interval = 3000) {
 export function useRealTimeSearches(interval = 4000) {
   const [searches, setSearches] = useState([]);
   const [loading, setLoading] = useState(true);
+  const isInitialLoad = useRef(true);
 
   const fetchSearches = useCallback(async () => {
     try {
       const data = await api.getRecentSearches();
       setSearches(data.searches || []);
-      setLoading(false);
+      if (isInitialLoad.current) {
+        setLoading(false);
+        isInitialLoad.current = false;
+      }
     } catch (error) {
       console.error('Error fetching searches:', error);
-      setLoading(false);
+      if (isInitialLoad.current) {
+        setLoading(false);
+        isInitialLoad.current = false;
+      }
     }
   }, []);
 
@@ -128,15 +163,22 @@ export function useRealTimeSearches(interval = 4000) {
 export function useRealTimeTransfers(interval = 4000) {
   const [transfers, setTransfers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const isInitialLoad = useRef(true);
 
   const fetchTransfers = useCallback(async () => {
     try {
       const data = await api.getRecentTransfers();
       setTransfers(data.transfers || []);
-      setLoading(false);
+      if (isInitialLoad.current) {
+        setLoading(false);
+        isInitialLoad.current = false;
+      }
     } catch (error) {
       console.error('Error fetching transfers:', error);
-      setLoading(false);
+      if (isInitialLoad.current) {
+        setLoading(false);
+        isInitialLoad.current = false;
+      }
     }
   }, []);
 
