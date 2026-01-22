@@ -27,7 +27,7 @@ const PRL = () => {
       }
 
       // Get active shift
-      const shiftsResponse = await api.get('/prl/shifts/active')
+      const shiftsResponse = await api.get('/api/prl/shifts/active')
       const shifts = shiftsResponse.data.shifts || []
       
       if (shifts.length > 0) {
@@ -35,11 +35,11 @@ const PRL = () => {
         setActiveShift(shift)
 
         // Get workers for this shift
-        const workersResponse = await api.get(`/prl/workers?shift_id=${shift.id}`)
+        const workersResponse = await api.get(`/api/prl/workers?shift_id=${shift.id}`)
         setWorkers(workersResponse.data.workers || [])
 
         // Get stats
-        const statsResponse = await api.get(`/prl/shifts/${shift.id}/stats`)
+        const statsResponse = await api.get(`/api/prl/shifts/${shift.id}/stats`)
         setStats(statsResponse.data.stats || null)
       }
 
@@ -88,7 +88,7 @@ const PRL = () => {
   const handleCall = async (workerId) => {
     try {
       setCalling(workerId)
-      const response = await api.post('/prl/calls/initiate', { worker_id: workerId })
+      const response = await api.post('/api/prl/calls/initiate', { worker_id: workerId })
       
       if (response.data.success) {
         // Refresh data to show updated status
