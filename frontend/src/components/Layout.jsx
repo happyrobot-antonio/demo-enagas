@@ -56,10 +56,14 @@ const Layout = ({ children }) => {
         <div className="max-w-screen-2xl mx-auto px-6 h-16 flex items-center justify-between">
           {/* Logo & Brand */}
           <div className="flex items-center space-x-3">
-            <Activity className="h-5 w-5 text-foreground" strokeWidth={1.5} />
+            <img 
+              src="/enagas-logo.png" 
+              alt="Enagás" 
+              className="h-8 w-auto"
+            />
             <div className="flex flex-col">
               <span className="text-sm font-semibold tracking-tight">Mesa de Servicios GTS</span>
-              <span className="text-[10px] text-muted-foreground font-mono">Enagás · Real-time</span>
+              <span className="text-[10px] text-muted-foreground font-mono">Real-time Monitoring</span>
             </div>
           </div>
 
