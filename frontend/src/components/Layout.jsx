@@ -12,11 +12,14 @@ const Layout = ({ children }) => {
   const headerRef = useRef(null)
   const pageRef = useRef(null)
 
-  const navigation = [
+  const mainNavigation = [
     { name: 'Panel de Control', path: '/', icon: Home },
     { name: 'Tickets', path: '/tickets', icon: FileText, badge: stats.tickets_abiertos },
     { name: 'Emergencias', path: '/emergencies', icon: AlertTriangle, badge: stats.emergencias_activas },
     { name: 'Búsquedas', path: '/searches', icon: Search },
+  ]
+
+  const prlNavigation = [
     { name: 'PRL', path: '/prl', icon: Shield },
   ]
 
@@ -94,44 +97,88 @@ const Layout = ({ children }) => {
           />
         </div>
         
-        <nav className="flex flex-col items-center py-6 space-y-2">
-          {navigation.map((item) => {
-            const Icon = item.icon
-            const isActive = location.pathname === item.path
+        <nav className="flex flex-col items-center py-6 h-full">
+          {/* Main Navigation */}
+          <div className="space-y-2 flex-1">
+            {mainNavigation.map((item) => {
+              const Icon = item.icon
+              const isActive = location.pathname === item.path
 
-            return (
-              <Link
-                key={item.path}
-                to={item.path}
-                className={clsx(
-                  'relative group flex flex-col items-center justify-center w-16 h-16 rounded-lg transition-all duration-200',
-                  isActive
-                    ? 'bg-secondary text-foreground'
-                    : 'text-muted-foreground hover:text-foreground hover:bg-secondary/50'
-                )}
-              >
-                {/* Active indicator */}
-                {isActive && (
-                  <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-accent-blue rounded-r-full" />
-                )}
+              return (
+                <Link
+                  key={item.path}
+                  to={item.path}
+                  className={clsx(
+                    'relative group flex flex-col items-center justify-center w-16 h-16 rounded-lg transition-all duration-200',
+                    isActive
+                      ? 'bg-secondary text-foreground'
+                      : 'text-muted-foreground hover:text-foreground hover:bg-secondary/50'
+                  )}
+                >
+                  {/* Active indicator */}
+                  {isActive && (
+                    <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-accent-blue rounded-r-full" />
+                  )}
 
-                <Icon className="h-6 w-6" strokeWidth={1.5} />
-                <span className="text-[10px] font-medium mt-1 tracking-tight">{item.name.slice(0, 5)}</span>
+                  <Icon className="h-6 w-6" strokeWidth={1.5} />
+                  <span className="text-[10px] font-medium mt-1 tracking-tight">{item.name.slice(0, 5)}</span>
 
-                {/* Badge */}
-                {item.badge > 0 && (
-                  <span className="absolute -top-1 -right-1 flex h-6 w-6 items-center justify-center rounded-full bg-accent-blue text-[11px] font-semibold text-white">
-                    {item.badge > 9 ? '9+' : item.badge}
-                  </span>
-                )}
+                  {/* Badge */}
+                  {item.badge > 0 && (
+                    <span className="absolute -top-1 -right-1 flex h-6 w-6 items-center justify-center rounded-full bg-accent-blue text-[11px] font-semibold text-white">
+                      {item.badge > 9 ? '9+' : item.badge}
+                    </span>
+                  )}
 
-                {/* Tooltip on hover */}
-                <div className="absolute left-full ml-3 px-3 py-1.5 bg-foreground text-background text-sm rounded-md opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity whitespace-nowrap shadow-lg">
-                  {item.name}
-                </div>
-              </Link>
-            )
-          })}
+                  {/* Tooltip on hover */}
+                  <div className="absolute left-full ml-3 px-3 py-1.5 bg-foreground text-background text-sm rounded-md opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity whitespace-nowrap shadow-lg">
+                    {item.name}
+                  </div>
+                </Link>
+              )
+            })}
+          </div>
+
+          {/* PRL Section - Separated */}
+          <div className="pt-6 border-t border-border w-16">
+            {prlNavigation.map((item) => {
+              const Icon = item.icon
+              const isActive = location.pathname === item.path
+
+              return (
+                <Link
+                  key={item.path}
+                  to={item.path}
+                  className={clsx(
+                    'relative group flex flex-col items-center justify-center w-16 h-16 rounded-lg transition-all duration-200',
+                    isActive
+                      ? 'bg-gradient-to-br from-green-500/20 to-blue-500/20 text-foreground border border-green-500/30'
+                      : 'text-muted-foreground hover:text-foreground hover:bg-gradient-to-br hover:from-green-500/10 hover:to-blue-500/10'
+                  )}
+                >
+                  {/* Active indicator */}
+                  {isActive && (
+                    <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-green-500 rounded-r-full" />
+                  )}
+
+                  <Icon className="h-7 w-7" strokeWidth={1.8} />
+                  <span className="text-[10px] font-bold mt-1 tracking-tight">{item.name}</span>
+
+                  {/* Badge */}
+                  {item.badge > 0 && (
+                    <span className="absolute -top-1 -right-1 flex h-6 w-6 items-center justify-center rounded-full bg-green-600 text-[11px] font-semibold text-white">
+                      {item.badge > 9 ? '9+' : item.badge}
+                    </span>
+                  )}
+
+                  {/* Tooltip on hover */}
+                  <div className="absolute left-full ml-3 px-3 py-1.5 bg-green-600 text-white text-sm font-medium rounded-md opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity whitespace-nowrap shadow-lg">
+                    {item.name} - Prevención de Riesgos
+                  </div>
+                </Link>
+              )
+            })}
+          </div>
         </nav>
       </aside>
 
