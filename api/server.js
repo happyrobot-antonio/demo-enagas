@@ -71,7 +71,7 @@ app.use('/api/prl', prlRouter);
 app.get('/', (req, res) => {
   res.json({
     message: 'API Mesa de Servicios GTS - Enagás',
-    version: '1.0.0',
+    version: '1.1.0',
     endpoints: {
       health: '/health',
       tickets: '/api/tickets',
@@ -82,6 +82,10 @@ app.get('/', (req, res) => {
       stats: '/api/stats',
       calls: '/api/calls',
       prl: '/api/prl'
+    },
+    prl: {
+      description: 'Prevención de Riesgos Laborales',
+      available: true
     }
   });
 });
