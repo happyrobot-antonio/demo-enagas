@@ -12,10 +12,12 @@ const InstallationsMap = ({ emergencies = [], tickets = [], height = '500px' }) 
       e.ubicacion_completa?.includes(installation.region)
     )
     
-    // Filtrar tickets que mencionen esta instalación
+    // Filtrar tickets que mencionen esta instalación (buscar en ubicacion y sistema)
     const installationTickets = tickets.filter(t => 
       t.ubicacion?.includes(installation.name) ||
-      t.ubicacion?.includes(installation.region)
+      t.ubicacion?.includes(installation.region) ||
+      t.sistema?.includes(installation.name) ||
+      t.sistema?.includes(installation.region)
     )
     
     // Lógica de prioridad de colores
@@ -34,7 +36,9 @@ const InstallationsMap = ({ emergencies = [], tickets = [], height = '500px' }) 
     
     const ticketsCount = tickets.filter(t => 
       t.ubicacion?.includes(installation.name) ||
-      t.ubicacion?.includes(installation.region)
+      t.ubicacion?.includes(installation.region) ||
+      t.sistema?.includes(installation.name) ||
+      t.sistema?.includes(installation.region)
     ).length
     
     return { emergenciesCount, ticketsCount }
@@ -49,7 +53,9 @@ const InstallationsMap = ({ emergencies = [], tickets = [], height = '500px' }) 
     
     const installationTickets = tickets.filter(t => 
       t.ubicacion?.includes(installation.name) ||
-      t.ubicacion?.includes(installation.region)
+      t.ubicacion?.includes(installation.region) ||
+      t.sistema?.includes(installation.name) ||
+      t.sistema?.includes(installation.region)
     )
     
     return {

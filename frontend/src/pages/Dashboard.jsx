@@ -98,29 +98,6 @@ const Dashboard = () => {
         </div>
       </div>
 
-      {/* Mapa de Instalaciones */}
-      <div className="animate-item">
-        <Card className="overflow-hidden">
-          <Card.Header>
-            <div className="flex items-center justify-between">
-              <div>
-                <h2 className="text-xl font-semibold">Instalaciones Enagás - Mapa de Estado</h2>
-                <p className="text-sm text-muted-foreground mt-1">
-                  Vista en tiempo real de incidencias por instalación
-                </p>
-              </div>
-            </div>
-          </Card.Header>
-          <Card.Content className="p-0 relative">
-            <InstallationsMap 
-              emergencies={activeEmergencies || []}
-              tickets={recentTickets || []}
-              height="500px"
-            />
-          </Card.Content>
-        </Card>
-      </div>
-
       {/* Bento Grid - Stats */}
       <div className="animate-item grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard
@@ -258,54 +235,23 @@ const Dashboard = () => {
           </Card>
         </div>
 
-        {/* System Status */}
+        {/* Mapa de Instalaciones */}
         <div className="animate-item">
-          <Card>
+          <Card className="overflow-hidden">
             <Card.Header>
               <div className="flex items-center justify-between">
-                <Card.Title>Estado de Sistemas</Card.Title>
-                <Activity className="h-4 w-4 text-muted-foreground" strokeWidth={1.5} />
+                <div>
+                  <Card.Title>Mapa de Instalaciones</Card.Title>
+                  <Card.Description>Estado en tiempo real de incidencias</Card.Description>
+                </div>
               </div>
-              <Card.Description>Monitorización de servicios</Card.Description>
             </Card.Header>
-            <Card.Content>
-              <div className="space-y-3">
-                {systemStatus.map((system) => (
-                  <div
-                    key={system.id}
-                    className="flex items-center justify-between py-2 border-b border-border last:border-0"
-                  >
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium truncate">{system.sistema}</p>
-                      {system.mensaje && (
-                        <p className="text-xs text-muted-foreground truncate">{system.mensaje}</p>
-                      )}
-                    </div>
-                    <div className="flex items-center gap-2 flex-shrink-0">
-                      <div
-                        className={clsx(
-                          'h-2 w-2 rounded-full',
-                          system.estado === 'OPERATIVO' && 'bg-success animate-pulse-slow',
-                          system.estado === 'DEGRADADO' && 'bg-yellow-500',
-                          system.estado === 'MANTENIMIENTO' && 'bg-accent-blue',
-                          system.estado === 'CAIDO' && 'bg-destructive'
-                        )}
-                      />
-                      <span
-                        className={clsx(
-                          'text-xs font-medium',
-                          system.estado === 'OPERATIVO' && 'text-success',
-                          system.estado === 'DEGRADADO' && 'text-yellow-600',
-                          system.estado === 'MANTENIMIENTO' && 'text-accent-blue',
-                          system.estado === 'CAIDO' && 'text-destructive'
-                        )}
-                      >
-                        {system.estado}
-                      </span>
-                    </div>
-                  </div>
-                ))}
-              </div>
+            <Card.Content className="p-0 relative">
+              <InstallationsMap 
+                emergencies={activeEmergencies || []}
+                tickets={recentTickets || []}
+                height="450px"
+              />
             </Card.Content>
           </Card>
         </div>

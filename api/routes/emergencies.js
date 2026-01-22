@@ -5,7 +5,7 @@ const { query } = require('../config/database');
 // Activar protocolo de emergencia (tool: activate_emergency_protocol)
 router.post('/', async (req, res) => {
   try {
-    const {
+    let {
       tipo_incidente,
       ubicacion_completa,
       contacto_llamante,
@@ -16,6 +16,13 @@ router.post('/', async (req, res) => {
       provincia,
       run_id
     } = req.body;
+
+    // Asignar ubicación por defecto a Terminal GNL Barcelona si no se especifica
+    if (!ubicacion_completa || ubicacion_completa.trim() === '') {
+      ubicacion_completa = 'Terminal GNL Barcelona';
+      if (!municipio) municipio = 'Barcelona';
+      if (!provincia) provincia = 'Barcelona';
+    }
 
     // Validaciones
     if (!tipo_incidente || !ubicacion_completa || !contacto_llamante || !descripcion_situacion || !nivel_riesgo) {

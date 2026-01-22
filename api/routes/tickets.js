@@ -5,7 +5,7 @@ const { query } = require('../config/database');
 // Crear nuevo ticket (tool: create_gts_ticket)
 router.post('/', async (req, res) => {
   try {
-    const {
+    let {
       tipo,
       descripcion,
       usuario_afectado,
@@ -15,6 +15,11 @@ router.post('/', async (req, res) => {
       notas,
       run_id
     } = req.body;
+
+    // Asignar ubicación por defecto a Terminal GNL Barcelona si no se especifica sistema
+    if (!sistema || sistema.trim() === '') {
+      sistema = 'Terminal GNL Barcelona';
+    }
 
     // Validaciones
     if (!tipo || !descripcion || !contacto) {
