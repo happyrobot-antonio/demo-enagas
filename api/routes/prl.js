@@ -85,7 +85,14 @@ router.get('/workers', async (req, res) => {
       paramCount++;
     }
 
-    queryText += ' ORDER BY w.prioridad DESC, w.created_at ASC';
+    queryText += ` ORDER BY 
+      CASE w.prioridad 
+        WHEN 'CRITICA' THEN 1 
+        WHEN 'ALTA' THEN 2 
+        WHEN 'NORMAL' THEN 3 
+        ELSE 4 
+      END,
+      w.nombre_completo ASC`;
 
     const result = await query(queryText, params);
 

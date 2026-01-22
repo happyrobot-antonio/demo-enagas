@@ -228,9 +228,9 @@ const PRL = () => {
             </div>
             {stats && (
               <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                <span>✓ {stats.completados} Completados</span>
-                <span>⏳ {stats.pendientes} Pendientes</span>
-                <span>📞 {stats.en_curso} En Curso</span>
+                <span>{stats.completados} Completados</span>
+                <span>{stats.pendientes} Pendientes</span>
+                <span>{stats.en_curso} En Curso</span>
               </div>
             )}
           </div>
