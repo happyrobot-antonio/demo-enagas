@@ -103,7 +103,31 @@ const PRL = () => {
   const handleCall = async (workerId) => {
     try {
       setCalling(workerId)
-      const response = await api.post('/api/prl/calls/initiate', { worker_id: workerId })
+      
+      // 1. Disparar webhook de HappyRobot
+      const webhookResponse = await fetch('https://workflows.platform.happyrobot.ai/hooks/xvjhfhj8fgho', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ worker_id: workerId })
+      })
+      
+      const webhookData = await webhookResponse.json()
+      console.log('HappyRobot webhook response:', webhookData)
+      
+      // 2. Extraer run_id de la respuesta
+      const runId = webhookData.queued_run_ids?.[0]
+      
+      if (!runId) {
+        throw new Error('No se recibió run_id del webhook')
+      }
+      
+      // 3. Registrar la llamada en nuestro backend con el run_id
+      const response = await api.post('/api/prl/calls/initiate', { 
+        worker_id: workerId,
+        happyrobot_run_id: runId
+      })
       
       if (response.success) {
         // Refresh data to show updated status
@@ -114,6 +138,7 @@ const PRL = () => {
       }
     } catch (error) {
       console.error('Error al iniciar llamada:', error)
+      alert('Error al iniciar la llamada. Por favor, intenta de nuevo.')
       setCalling(null)
     }
   }

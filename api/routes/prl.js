@@ -190,7 +190,7 @@ router.get('/shifts/:id/stats', async (req, res) => {
 // Iniciar llamada de verificación
 router.post('/calls/initiate', async (req, res) => {
   try {
-    const { worker_id } = req.body;
+    const { worker_id, happyrobot_run_id } = req.body;
 
     if (!worker_id) {
       return res.status(400).json({ error: 'worker_id es requerido' });
@@ -208,13 +208,13 @@ router.post('/calls/initiate', async (req, res) => {
 
     const worker = workerResult.rows[0];
 
-    // Crear registro de llamada
+    // Crear registro de llamada con HappyRobot run_id
     const callResult = await query(
       `INSERT INTO prl_safety_calls (
-        worker_id, telefono_destino, estado, programada_para, iniciada_at, contacto_exitoso
-      ) VALUES ($1, $2, $3, $4, $5, $6)
+        worker_id, telefono_destino, estado, programada_para, iniciada_at, contacto_exitoso, call_id
+      ) VALUES ($1, $2, $3, NOW(), NOW(), $4, $5)
       RETURNING *`,
-      [worker_id, worker.telefono, 'EN_CURSO', NOW(), NOW(), true]
+      [worker_id, worker.telefono, 'EN_CURSO', true, happyrobot_run_id]
     );
 
     // Actualizar estado del trabajador
@@ -239,7 +239,8 @@ router.post('/calls/initiate', async (req, res) => {
       success: true,
       message: 'Llamada iniciada',
       call,
-      webhook_url: process.env.HAPPYROBOT_WEBHOOK_URL || 'https://api.happyrobot.ai/webhook/prl-call'
+      happyrobot_run_id: happyrobot_run_id,
+      happyrobot_tracking_url: happyrobot_run_id ? `https://v2.platform.happyrobot.ai/antonio/workflow/shzu8lzuhftc/runs?run_id=${happyrobot_run_id}` : null
     });
 
   } catch (error) {
@@ -480,6 +481,63 @@ router.get('/incidents', async (req, res) => {
     console.error('Error al obtener incidentes:', error);
     res.status(500).json({
       error: 'Error al obtener incidentes',
+      details: error.message
+    });
+  }
+});
+
+// Obtener estado de llamada de HappyRobot
+router.get('/calls/:callId/happyrobot-status', async (req, res) => {
+  try {
+    const { callId } = req.params;
+
+    // Obtener la llamada de la base de datos
+    const callResult = await query(
+      'SELECT * FROM prl_safety_calls WHERE id = $1',
+      [callId]
+    );
+
+    if (callResult.rows.length === 0) {
+      return res.status(404).json({ error: 'Llamada no encontrada' });
+    }
+
+    const call = callResult.rows[0];
+    const happyrobotRunId = call.call_id;
+
+    if (!happyrobotRunId) {
+      return res.status(400).json({ error: 'Esta llamada no tiene run_id de HappyRobot' });
+    }
+
+    // Consultar estado en HappyRobot API
+    const happyrobotResponse = await fetch(
+      `https://platform.happyrobot.ai/api/v1/runs/${happyrobotRunId}`,
+      {
+        method: 'GET',
+        headers: {
+          'authorization': 'Bearer 642ce338577da316e92acd557a8e17e6',
+          'x-organization-id': '01973c47-56ec-7401-a0b2-786431d5f1f2'
+        }
+      }
+    );
+
+    if (!happyrobotResponse.ok) {
+      throw new Error(`HappyRobot API error: ${happyrobotResponse.status}`);
+    }
+
+    const happyrobotData = await happyrobotResponse.json();
+
+    res.json({
+      success: true,
+      call_id: callId,
+      happyrobot_run_id: happyrobotRunId,
+      happyrobot_status: happyrobotData,
+      local_call_data: call
+    });
+
+  } catch (error) {
+    console.error('Error al obtener estado de HappyRobot:', error);
+    res.status(500).json({
+      error: 'Error al obtener estado de HappyRobot',
       details: error.message
     });
   }
