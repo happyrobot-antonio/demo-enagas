@@ -58,7 +58,14 @@ const Layout = ({ children }) => {
         <div className="max-w-screen-2xl mx-auto px-6 h-16 flex items-center justify-between">
           {/* Brand */}
           <div className="flex items-center space-x-3">
-            <Activity className="h-5 w-5 text-foreground" strokeWidth={1.5} />
+            <div className="flex items-center space-x-2">
+              <img 
+                src="/happyrobot-icon.svg" 
+                alt="HappyRobot" 
+                className="h-5 w-5 dark:invert opacity-70"
+              />
+              <Activity className="h-5 w-5 text-foreground" strokeWidth={1.5} />
+            </div>
             <div className="flex flex-col">
               <span className="text-sm font-semibold tracking-tight">Mesa de Servicios GTS - Enagás</span>
               <span className="text-[10px] text-muted-foreground font-mono">Powered by HappyRobot</span>
@@ -91,9 +98,9 @@ const Layout = ({ children }) => {
         {/* Logo HappyRobot */}
         <div className="flex items-center justify-center py-6 border-b border-border">
           <img 
-            src="/happyrobot-logo.svg" 
+            src="/happyrobot-icon.svg" 
             alt="HappyRobot" 
-            className="w-16 h-auto opacity-90 hover:opacity-100 transition-opacity"
+            className="w-12 h-auto dark:invert opacity-80 hover:opacity-100 transition-opacity"
           />
         </div>
         
