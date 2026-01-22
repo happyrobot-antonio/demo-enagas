@@ -96,11 +96,22 @@ const Layout = ({ children }) => {
       {/* Side Navigation Rail */}
       <aside className="fixed left-0 top-16 bottom-0 w-24 border-r border-border bg-background/50 backdrop-blur-sm z-40 flex flex-col">
         {/* Logo HappyRobot */}
-        <div className="flex items-center justify-center py-6 border-b border-border">
+        <div className="flex items-center justify-center py-4 border-b border-border">
           <img 
             src="/happyrobot-icon.svg" 
             alt="HappyRobot" 
-            className="w-12 h-auto dark:invert opacity-80 hover:opacity-100 transition-opacity"
+            className="w-10 h-auto dark:invert opacity-80 hover:opacity-100 transition-opacity"
+            title="Powered by HappyRobot"
+          />
+        </div>
+
+        {/* Logo Enagás */}
+        <div className="flex items-center justify-center py-4 border-b border-border">
+          <img 
+            src="/enagas-logo.png" 
+            alt="Enagás" 
+            className="w-16 h-auto opacity-90 hover:opacity-100 transition-opacity"
+            title="Enagás GTS"
           />
         </div>
         
