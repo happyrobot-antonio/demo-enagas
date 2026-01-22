@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef, useCallback } from 'react'
-import { Search, RefreshCw, TrendingUp, FileSearch } from 'lucide-react'
+import { Search, RefreshCw, TrendingUp, FileSearch, ExternalLink } from 'lucide-react'
 import Badge from '../components/Badge'
 import Card from '../components/Card'
 import Button from '../components/Button'
@@ -296,7 +296,20 @@ const Searches = () => {
 
                   {/* Footer */}
                   <div className="flex items-center justify-between pt-2 text-xs text-muted-foreground">
-                    <span>{formatRelativeTime(search.created_at)}</span>
+                    <div className="flex items-center gap-3">
+                      <span>{formatRelativeTime(search.created_at)}</span>
+                      {search.happyrobot_link && (
+                        <a
+                          href={search.happyrobot_link}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-1 px-2 py-1 bg-accent-blue/10 hover:bg-accent-blue/20 text-accent-blue rounded transition-colors"
+                        >
+                          <ExternalLink className="h-3 w-3" strokeWidth={2} />
+                          <span className="font-medium">HappyRobot</span>
+                        </a>
+                      )}
+                    </div>
                     <span className="font-mono">ID: {search.id.slice(0, 8)}</span>
                   </div>
                 </div>

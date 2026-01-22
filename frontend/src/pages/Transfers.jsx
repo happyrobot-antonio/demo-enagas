@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef, useCallback } from 'react'
-import { Search, RefreshCw, ArrowRightLeft, UserCheck } from 'lucide-react'
+import { Search, RefreshCw, ArrowRightLeft, UserCheck, ExternalLink } from 'lucide-react'
 import Badge from '../components/Badge'
 import Card from '../components/Card'
 import Button from '../components/Button'
@@ -331,7 +331,20 @@ const Transfers = () => {
 
                   {/* Footer */}
                   <div className="flex items-center justify-between pt-2 text-xs text-muted-foreground">
-                    <span>{formatRelativeTime(transfer.created_at)}</span>
+                    <div className="flex items-center gap-3">
+                      <span>{formatRelativeTime(transfer.created_at)}</span>
+                      {transfer.happyrobot_link && (
+                        <a
+                          href={transfer.happyrobot_link}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-1 px-2 py-1 bg-accent-blue/10 hover:bg-accent-blue/20 text-accent-blue rounded transition-colors"
+                        >
+                          <ExternalLink className="h-3 w-3" strokeWidth={2} />
+                          <span className="font-medium">HappyRobot</span>
+                        </a>
+                      )}
+                    </div>
                     <span className="font-mono">ID: {transfer.id.slice(0, 8)}</span>
                   </div>
                 </div>

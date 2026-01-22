@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from 'react'
-import { Search, RefreshCw, Phone as PhoneIcon, Clock } from 'lucide-react'
+import { Search, RefreshCw, Phone as PhoneIcon, Clock, ExternalLink } from 'lucide-react'
 import Badge from '../components/Badge'
 import Card from '../components/Card'
 import Button from '../components/Button'
@@ -265,7 +265,20 @@ const Calls = () => {
 
                       {/* Footer */}
                       <div className="flex items-center justify-between text-xs text-muted-foreground font-mono pt-2 border-t border-border">
-                        <span>{formatRelativeTime(call.started_at)}</span>
+                        <div className="flex items-center gap-3">
+                          <span>{formatRelativeTime(call.started_at)}</span>
+                          {call.happyrobot_link && (
+                            <a
+                              href={call.happyrobot_link}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="flex items-center gap-1 px-2 py-1 bg-accent-blue/10 hover:bg-accent-blue/20 text-accent-blue rounded transition-colors"
+                            >
+                              <ExternalLink className="h-3 w-3" strokeWidth={2} />
+                              <span className="font-medium">HappyRobot</span>
+                            </a>
+                          )}
+                        </div>
                         <span>{formatDate(call.started_at)}</span>
                       </div>
                     </div>

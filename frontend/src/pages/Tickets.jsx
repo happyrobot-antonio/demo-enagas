@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef, useCallback } from 'react'
-import { Search, RefreshCw, ChevronDown } from 'lucide-react'
+import { Search, RefreshCw, ChevronDown, ExternalLink } from 'lucide-react'
 import Badge from '../components/Badge'
 import Card from '../components/Card'
 import Button from '../components/Button'
@@ -247,7 +247,21 @@ const Tickets = () => {
 
                   {/* Footer */}
                   <div className="flex items-center justify-between text-xs text-muted-foreground font-mono pt-2 border-t border-border">
-                    <span>{formatDate(ticket.created_at)}</span>
+                    <div className="flex items-center gap-3">
+                      <span>{formatDate(ticket.created_at)}</span>
+                      {ticket.happyrobot_link && (
+                        <a
+                          href={ticket.happyrobot_link}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={(e) => e.stopPropagation()}
+                          className="flex items-center gap-1 px-2 py-1 bg-accent-blue/10 hover:bg-accent-blue/20 text-accent-blue rounded transition-colors"
+                        >
+                          <ExternalLink className="h-3 w-3" strokeWidth={2} />
+                          <span className="font-medium">HappyRobot</span>
+                        </a>
+                      )}
+                    </div>
                     <span>{formatRelativeTime(ticket.created_at)}</span>
                   </div>
                 </div>

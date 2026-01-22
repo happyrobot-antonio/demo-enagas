@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef, useCallback } from 'react'
-import { Search, RefreshCw, MapPin, Clock } from 'lucide-react'
+import { Search, RefreshCw, MapPin, Clock, ExternalLink } from 'lucide-react'
 import Badge from '../components/Badge'
 import Card from '../components/Card'
 import Button from '../components/Button'
@@ -258,6 +258,17 @@ const Emergencies = () => {
                           <Clock className="h-3 w-3" strokeWidth={2} />
                           <span>ETA: {emergency.tiempo_estimado_llegada} min</span>
                         </div>
+                      )}
+                      {emergency.happyrobot_link && (
+                        <a
+                          href={emergency.happyrobot_link}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-1 px-2 py-1 bg-accent-blue/10 hover:bg-accent-blue/20 text-accent-blue rounded transition-colors"
+                        >
+                          <ExternalLink className="h-3 w-3" strokeWidth={2} />
+                          <span className="font-medium">Ver en HappyRobot</span>
+                        </a>
                       )}
                     </div>
                     <span>{formatDate(emergency.created_at)}</span>
