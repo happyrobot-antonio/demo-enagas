@@ -13,7 +13,7 @@ const Layout = ({ children }) => {
   const pageRef = useRef(null)
 
   const navigation = [
-    { name: 'Dashboard', path: '/', icon: Home },
+    { name: 'Panel de Control', path: '/', icon: Home },
     { name: 'Tickets', path: '/tickets', icon: FileText, badge: stats.tickets_abiertos },
     { name: 'Emergencias', path: '/emergencies', icon: AlertTriangle, badge: stats.emergencias_activas },
     { name: 'Llamadas', path: '/calls', icon: Phone, badge: stats.llamadas_en_curso },
@@ -54,13 +54,9 @@ const Layout = ({ children }) => {
         className="fixed top-0 left-0 right-0 z-50 transition-all duration-300"
       >
         <div className="max-w-screen-2xl mx-auto px-6 h-16 flex items-center justify-between">
-          {/* Logo & Brand */}
+          {/* Brand */}
           <div className="flex items-center space-x-3">
-            <img 
-              src="/enagas-logo.png" 
-              alt="Enagás" 
-              className="h-8 w-auto"
-            />
+            <Activity className="h-5 w-5 text-foreground" strokeWidth={1.5} />
             <div className="flex flex-col">
               <span className="text-sm font-semibold tracking-tight">Mesa de Servicios GTS</span>
               <span className="text-[10px] text-muted-foreground font-mono">Real-time Monitoring</span>
@@ -90,6 +86,15 @@ const Layout = ({ children }) => {
 
       {/* Side Navigation Rail */}
       <aside className="fixed left-0 top-16 bottom-0 w-20 border-r border-border bg-background/50 backdrop-blur-sm z-40">
+        {/* Logo Enagás */}
+        <div className="flex items-center justify-center py-6 border-b border-border">
+          <img 
+            src="/enagas-logo.png" 
+            alt="Enagás" 
+            className="w-16 h-auto px-2"
+          />
+        </div>
+        
         <nav className="flex flex-col items-center py-6 space-y-2">
           {navigation.map((item) => {
             const Icon = item.icon

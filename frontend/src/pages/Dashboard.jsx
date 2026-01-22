@@ -85,7 +85,7 @@ const Dashboard = () => {
       <div className="animate-item">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
+            <h1 className="text-3xl font-bold tracking-tight">Panel de Control</h1>
             <p className="text-muted-foreground mt-1">Monitorización en tiempo real del sistema GTS</p>
           </div>
           <LiveIndicator 
