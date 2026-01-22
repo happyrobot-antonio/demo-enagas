@@ -18,6 +18,7 @@ const Emergencies = () => {
   const [filterEstado, setFilterEstado] = useState('')
   const [filterRiesgo, setFilterRiesgo] = useState('')
   const containerRef = useRef(null)
+  const hasAnimated = useRef(false)
 
   const fetchEmergencies = useCallback(async () => {
     try {
@@ -45,7 +46,9 @@ const Emergencies = () => {
   }, [fetchEmergencies])
 
   useEffect(() => {
-    if (!loading && containerRef.current) {
+    // Animación SOLO en carga inicial
+    if (!loading && containerRef.current && !hasAnimated.current) {
+      hasAnimated.current = true
       const cards = containerRef.current.querySelectorAll('.emergency-card')
       gsap.fromTo(
         cards,

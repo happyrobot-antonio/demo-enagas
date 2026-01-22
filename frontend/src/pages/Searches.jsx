@@ -17,6 +17,7 @@ const Searches = () => {
   const [searchTerm, setSearchTerm] = useState('')
   const [filterTipoProceso, setFilterTipoProceso] = useState('')
   const containerRef = useRef(null)
+  const hasAnimated = useRef(false)
 
   const fetchSearches = useCallback(async () => {
     try {
@@ -43,7 +44,9 @@ const Searches = () => {
   }, [fetchSearches])
 
   useEffect(() => {
-    if (!loading && containerRef.current) {
+    // Animación SOLO en carga inicial
+    if (!loading && containerRef.current && !hasAnimated.current) {
+      hasAnimated.current = true
       const cards = containerRef.current.querySelectorAll('.search-card')
       gsap.fromTo(
         cards,

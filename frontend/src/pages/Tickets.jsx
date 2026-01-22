@@ -19,6 +19,7 @@ const Tickets = () => {
   const [filterPrioridad, setFilterPrioridad] = useState('')
   const [expandedTicket, setExpandedTicket] = useState(null)
   const containerRef = useRef(null)
+  const hasAnimated = useRef(false)
 
   const fetchTickets = useCallback(async () => {
     try {
@@ -46,7 +47,9 @@ const Tickets = () => {
   }, [fetchTickets])
 
   useEffect(() => {
-    if (!loading && containerRef.current) {
+    // Animación SOLO en carga inicial
+    if (!loading && containerRef.current && !hasAnimated.current) {
+      hasAnimated.current = true
       const cards = containerRef.current.querySelectorAll('.ticket-card')
       gsap.fromTo(
         cards,

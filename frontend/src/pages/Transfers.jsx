@@ -18,6 +18,7 @@ const Transfers = () => {
   const [filterEstado, setFilterEstado] = useState('')
   const [filterArea, setFilterArea] = useState('')
   const containerRef = useRef(null)
+  const hasAnimated = useRef(false)
 
   const fetchTransfers = useCallback(async () => {
     try {
@@ -45,7 +46,9 @@ const Transfers = () => {
   }, [fetchTransfers])
 
   useEffect(() => {
-    if (!loading && containerRef.current) {
+    // Animación SOLO en carga inicial
+    if (!loading && containerRef.current && !hasAnimated.current) {
+      hasAnimated.current = true
       const cards = containerRef.current.querySelectorAll('.transfer-card')
       gsap.fromTo(
         cards,

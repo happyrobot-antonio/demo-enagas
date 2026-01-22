@@ -21,6 +21,7 @@ const Dashboard = () => {
   const [systemStatus, setSystemStatus] = useState([])
   const [expandedTicket, setExpandedTicket] = useState(null)
   const containerRef = useRef(null)
+  const hasAnimated = useRef(false)
 
   const loading = statsLoading || emergenciesLoading || ticketsLoading
 
@@ -32,8 +33,9 @@ const Dashboard = () => {
   }, [])
 
   useEffect(() => {
-    // Stagger animation for initial load
-    if (!loading && containerRef.current) {
+    // Stagger animation SOLO en carga inicial
+    if (!loading && containerRef.current && !hasAnimated.current) {
+      hasAnimated.current = true
       const elements = containerRef.current.querySelectorAll('.animate-item')
       gsap.fromTo(
         elements,
