@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from 'react';
-import api from '../utils/api';
+import { api } from '../utils/api';
 
 export function useRealTimeEmergencies(interval = 2000) {
   const [emergencies, setEmergencies] = useState([]);
