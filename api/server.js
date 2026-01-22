@@ -67,11 +67,14 @@ app.use('/api/stats', statsRouter);
 app.use('/api/calls', callsRouter);
 app.use('/api/prl', prlRouter);
 
+console.log('✅ Rutas PRL registradas en /api/prl');
+
 // Ruta raíz
 app.get('/', (req, res) => {
   res.json({
     message: 'API Mesa de Servicios GTS - Enagás',
-    version: '1.1.0',
+    version: '1.2.0',
+    timestamp: new Date().toISOString(),
     endpoints: {
       health: '/health',
       tickets: '/api/tickets',
@@ -81,11 +84,17 @@ app.get('/', (req, res) => {
       systemStatus: '/api/system-status',
       stats: '/api/stats',
       calls: '/api/calls',
-      prl: '/api/prl'
+      prl: '/api/prl (NEW - Prevención de Riesgos Laborales)'
     },
     prl: {
-      description: 'Prevención de Riesgos Laborales',
-      available: true
+      description: 'Sistema PRL - Prevención de Riesgos Laborales',
+      available: true,
+      routes: {
+        shifts: '/api/prl/shifts/active',
+        workers: '/api/prl/workers',
+        calls: '/api/prl/calls',
+        incidents: '/api/prl/incidents'
+      }
     }
   });
 });
@@ -150,6 +159,7 @@ const startServer = async () => {
       console.log(`🚀 Servidor GTS API iniciado en puerto ${PORT}`);
       console.log(`📡 WebSocket server activo`);
       console.log(`🗄️  Base de datos conectada`);
+      console.log(`🛡️  Sistema PRL activo en /api/prl`);
       console.log(`🌍 Entorno: ${process.env.NODE_ENV || 'development'}`);
       console.log('================================================');
       console.log('');
