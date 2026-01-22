@@ -60,8 +60,8 @@ const Layout = ({ children }) => {
           <div className="flex items-center space-x-3">
             <Activity className="h-5 w-5 text-foreground" strokeWidth={1.5} />
             <div className="flex flex-col">
-              <span className="text-sm font-semibold tracking-tight">Mesa de Servicios GTS</span>
-              <span className="text-[10px] text-muted-foreground font-mono">Real-time Monitoring</span>
+              <span className="text-sm font-semibold tracking-tight">Mesa de Servicios GTS - Enagás</span>
+              <span className="text-[10px] text-muted-foreground font-mono">Powered by HappyRobot</span>
             </div>
           </div>
 
@@ -88,12 +88,12 @@ const Layout = ({ children }) => {
 
       {/* Side Navigation Rail */}
       <aside className="fixed left-0 top-16 bottom-0 w-24 border-r border-border bg-background/50 backdrop-blur-sm z-40">
-        {/* Logo Enagás - GRANDE */}
-        <div className="flex items-center justify-center py-8 border-b border-border">
+        {/* Logo HappyRobot */}
+        <div className="flex items-center justify-center py-6 border-b border-border">
           <img 
-            src="/enagas-logo.png" 
-            alt="Enagás" 
-            className="w-20 h-auto"
+            src="/happyrobot-logo.svg" 
+            alt="HappyRobot" 
+            className="w-16 h-auto opacity-90 hover:opacity-100 transition-opacity"
           />
         </div>
         
@@ -193,7 +193,7 @@ const Layout = ({ children }) => {
       <footer className="pl-24 border-t border-border bg-background/50 backdrop-blur-sm mt-12">
         <div className="max-w-screen-2xl mx-auto px-6 py-4">
           <p className="text-xs text-muted-foreground text-center font-mono">
-            © 2026 Enagás GTS
+            © 2026 Enagás GTS · Demo by <span className="text-foreground font-semibold">HappyRobot</span>
           </p>
         </div>
       </footer>
