@@ -5,6 +5,7 @@ import Card from '../components/Card'
 import Badge from '../components/Badge'
 import { DashboardStatsSkeleton } from '../components/Skeleton'
 import LiveIndicator from '../components/LiveIndicator'
+import InstallationsMap from '../components/InstallationsMap'
 import { useRealTimeStats, useRealTimeEmergencies, useRealTimeTickets } from '../hooks/useRealTimeData'
 import { POLLING_INTERVALS } from '../config/polling'
 import { api } from '../utils/api'
@@ -95,6 +96,29 @@ const Dashboard = () => {
             lastUpdate={stats?.last_update || new Date().toISOString()}
           />
         </div>
+      </div>
+
+      {/* Mapa de Instalaciones */}
+      <div className="animate-item">
+        <Card className="overflow-hidden">
+          <Card.Header>
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-xl font-semibold">Instalaciones Enagás - Mapa de Estado</h2>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Vista en tiempo real de incidencias por instalación
+                </p>
+              </div>
+            </div>
+          </Card.Header>
+          <Card.Content className="p-0 relative">
+            <InstallationsMap 
+              emergencies={activeEmergencies || []}
+              tickets={recentTickets || []}
+              height="500px"
+            />
+          </Card.Content>
+        </Card>
       </div>
 
       {/* Bento Grid - Stats */}

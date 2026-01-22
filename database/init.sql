@@ -274,6 +274,93 @@ SELECT
     (SELECT COUNT(*) FROM tickets WHERE created_at >= NOW() - INTERVAL '24 hours') as tickets_hoy,
     (SELECT COUNT(*) FROM emergencies WHERE created_at >= NOW() - INTERVAL '24 hours') as emergencias_hoy;
 
+-- =====================================================
+-- DATOS DE EJEMPLO PARA MAPA DE INSTALACIONES
+-- =====================================================
+
+-- Emergencia en Planta de Compresión Huelva
+INSERT INTO emergencies (
+    codigo_emergencia, tipo_incidente, ubicacion_completa, 
+    municipio, provincia, descripcion_situacion, nivel_riesgo,
+    contacto_llamante, estado, prioridad, created_at
+) VALUES (
+    'EMG-' || TO_CHAR(NOW(), 'YYYYMMDD') || '-001',
+    'FUGA',
+    'Planta de Compresión Huelva - Sector A - Compresor Principal',
+    'Huelva',
+    'Huelva',
+    'Detección de fuga menor en válvula de alivio del compresor principal. Mediciones iniciales indican escape controlado de gas natural. Personal evacuado preventivamente.',
+    'MEDIA',
+    jsonb_build_object(
+        'nombre', 'Supervisor Planta Huelva',
+        'telefono', '+34 600 111 000',
+        'cargo', 'Supervisor de Turno'
+    ),
+    'ACTIVA',
+    'ALTA',
+    NOW() - INTERVAL '45 minutes'
+);
+
+-- Tickets en diferentes instalaciones
+INSERT INTO tickets (
+    numero_ticket, tipo, descripcion, prioridad, estado,
+    contacto, created_at
+) VALUES 
+-- Ticket en Estación de Regulación Valladolid
+(
+    'TKT-' || TO_CHAR(NOW(), 'YYYYMMDD') || '-001',
+    'INCIDENCIA_TECNICA',
+    'Mantenimiento preventivo programado en Estación de Regulación Valladolid. Revisión de sistema de telemetría y calibración de sensores de presión.',
+    'MEDIA',
+    'EN_PROCESO',
+    jsonb_build_object(
+        'nombre', 'Técnico Mantenimiento Valladolid',
+        'telefono', '+34 600 222 000',
+        'email', 'mantenimiento.valladolid@enagas.es'
+    ),
+    NOW() - INTERVAL '2 hours'
+),
+-- Ticket crítico en Terminal GNL Barcelona
+(
+    'TKT-' || TO_CHAR(NOW(), 'YYYYMMDD') || '-002',
+    'INCIDENCIA_TECNICA',
+    'Anomalía detectada en sistema de control de temperatura del Terminal GNL Barcelona. Requiere atención prioritaria para evitar interrupciones en la cadena de frío.',
+    'alta',
+    'ABIERTO',
+    jsonb_build_object(
+        'nombre', 'Operador Terminal Barcelona',
+        'telefono', '+34 600 333 000',
+        'email', 'terminal.barcelona@enagas.es'
+    ),
+    NOW() - INTERVAL '30 minutes'
+),
+-- Ticket en Planta de Compresión Zaragoza
+(
+    'TKT-' || TO_CHAR(NOW(), 'YYYYMMDD') || '-003',
+    'CONSULTA_ESPECIALIZADA',
+    'Consulta sobre optimización de parámetros de compresión en Planta de Compresión Zaragoza. Solicitud de análisis de eficiencia energética.',
+    'BAJA',
+    'ABIERTO',
+    jsonb_build_object(
+        'nombre', 'Ingeniero de Proceso Zaragoza',
+        'email', 'proceso.zaragoza@enagas.es'
+    ),
+    NOW() - INTERVAL '1 day'
+);
+
+-- Actualizar system_status con información de ubicaciones
+INSERT INTO system_status (name, status, details, last_check)
+VALUES 
+    ('Planta Huelva', 'WARNING', 'Fuga menor detectada en compresor principal - Personal evacuado preventivamente', NOW()),
+    ('Terminal Barcelona', 'WARNING', 'Anomalía en sistema de control de temperatura', NOW()),
+    ('Estación Valladolid', 'NORMAL', 'Mantenimiento preventivo en curso', NOW()),
+    ('Planta Zaragoza', 'NORMAL', 'Operación normal', NOW()),
+    ('Estación Madrid', 'NORMAL', 'Todos los sistemas operativos', NOW())
+ON CONFLICT (name) DO UPDATE SET
+    status = EXCLUDED.status,
+    details = EXCLUDED.details,
+    last_check = EXCLUDED.last_check;
+
 -- Comentarios en tablas
 COMMENT ON TABLE tickets IS 'Registro de incidencias técnicas y consultas especializadas';
 COMMENT ON TABLE emergencies IS 'Protocolos de emergencia activados por situaciones de riesgo';
