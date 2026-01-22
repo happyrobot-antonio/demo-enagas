@@ -85,13 +85,13 @@ const Layout = ({ children }) => {
       </header>
 
       {/* Side Navigation Rail */}
-      <aside className="fixed left-0 top-16 bottom-0 w-20 border-r border-border bg-background/50 backdrop-blur-sm z-40">
-        {/* Logo Enagás */}
-        <div className="flex items-center justify-center py-6 border-b border-border">
+      <aside className="fixed left-0 top-16 bottom-0 w-24 border-r border-border bg-background/50 backdrop-blur-sm z-40">
+        {/* Logo Enagás - GRANDE */}
+        <div className="flex items-center justify-center py-8 border-b border-border">
           <img 
             src="/enagas-logo.png" 
             alt="Enagás" 
-            className="w-16 h-auto px-2"
+            className="w-20 h-auto"
           />
         </div>
         
@@ -105,7 +105,7 @@ const Layout = ({ children }) => {
                 key={item.path}
                 to={item.path}
                 className={clsx(
-                  'relative group flex flex-col items-center justify-center w-14 h-14 rounded-lg transition-all duration-200',
+                  'relative group flex flex-col items-center justify-center w-16 h-16 rounded-lg transition-all duration-200',
                   isActive
                     ? 'bg-secondary text-foreground'
                     : 'text-muted-foreground hover:text-foreground hover:bg-secondary/50'
@@ -113,21 +113,21 @@ const Layout = ({ children }) => {
               >
                 {/* Active indicator */}
                 {isActive && (
-                  <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-accent-blue rounded-r-full" />
+                  <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-accent-blue rounded-r-full" />
                 )}
 
-                <Icon className="h-5 w-5" strokeWidth={1.5} />
-                <span className="text-[9px] font-medium mt-1 tracking-tight">{item.name.slice(0, 4)}</span>
+                <Icon className="h-6 w-6" strokeWidth={1.5} />
+                <span className="text-[10px] font-medium mt-1 tracking-tight">{item.name.slice(0, 5)}</span>
 
                 {/* Badge */}
                 {item.badge > 0 && (
-                  <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-accent-blue text-[10px] font-semibold text-white">
+                  <span className="absolute -top-1 -right-1 flex h-6 w-6 items-center justify-center rounded-full bg-accent-blue text-[11px] font-semibold text-white">
                     {item.badge > 9 ? '9+' : item.badge}
                   </span>
                 )}
 
                 {/* Tooltip on hover */}
-                <div className="absolute left-full ml-2 px-2 py-1 bg-foreground text-background text-xs rounded opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity whitespace-nowrap">
+                <div className="absolute left-full ml-3 px-3 py-1.5 bg-foreground text-background text-sm rounded-md opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity whitespace-nowrap shadow-lg">
                   {item.name}
                 </div>
               </Link>
@@ -137,14 +137,14 @@ const Layout = ({ children }) => {
       </aside>
 
       {/* Main Content */}
-      <main className="pl-20 pt-16">
+      <main className="pl-24 pt-16">
         <div ref={pageRef} className="max-w-screen-2xl mx-auto px-6 py-8">
           {children}
         </div>
       </main>
 
       {/* Minimal Footer */}
-      <footer className="pl-20 border-t border-border bg-background/50 backdrop-blur-sm mt-12">
+      <footer className="pl-24 border-t border-border bg-background/50 backdrop-blur-sm mt-12">
         <div className="max-w-screen-2xl mx-auto px-6 py-4">
           <p className="text-xs text-muted-foreground text-center font-mono">
             © 2026 Enagás GTS
