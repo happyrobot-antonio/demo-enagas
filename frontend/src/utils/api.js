@@ -80,6 +80,10 @@ class ApiClient {
     return this.request('/api/tickets/status/open')
   }
 
+  async getRecentTickets(limit = 10) {
+    return this.request(`/api/tickets/recent?limit=${limit}`)
+  }
+
   // Emergencias
   async getEmergencies(params = {}) {
     const queryString = new URLSearchParams(params).toString()
@@ -88,6 +92,10 @@ class ApiClient {
 
   async getActiveEmergencies() {
     return this.request('/api/emergencies/active')
+  }
+
+  async getRecentEmergencies(limit = 10) {
+    return this.request(`/api/emergencies/recent?limit=${limit}`)
   }
 
   async createEmergency(data) {

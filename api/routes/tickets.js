@@ -138,6 +138,36 @@ router.get('/', async (req, res) => {
   }
 });
 
+// Obtener tickets recientes (debe ir ANTES de /:id para evitar conflictos)
+router.get('/recent', async (req, res) => {
+  try {
+    const limit = req.query.limit || 10;
+    
+    const result = await query(
+      `SELECT * FROM tickets 
+       ORDER BY created_at DESC 
+       LIMIT $1`,
+      [limit]
+    );
+
+    // Agregar happyrobot_link si existe run_id
+    const ticketsWithLinks = result.rows.map(ticket => ({
+      ...ticket,
+      happyrobot_link: ticket.run_id 
+        ? `https://v2.platform.happyrobot.ai/antonio/workflow/shzu8lzuhftc/runs?run_id=${ticket.run_id}`
+        : null
+    }));
+
+    res.json(ticketsWithLinks);
+  } catch (error) {
+    console.error('Error en /tickets/recent:', error);
+    res.status(500).json({
+      error: 'Error al obtener tickets recientes',
+      details: error.message
+    });
+  }
+});
+
 // Obtener un ticket específico
 router.get('/:id', async (req, res) => {
   try {

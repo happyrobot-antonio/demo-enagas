@@ -181,6 +181,36 @@ router.get('/active', async (req, res) => {
   }
 });
 
+// Obtener emergencias recientes (debe ir ANTES de /:id para evitar conflictos)
+router.get('/recent', async (req, res) => {
+  try {
+    const limit = req.query.limit || 10;
+    
+    const result = await query(
+      `SELECT * FROM emergencies 
+       ORDER BY created_at DESC 
+       LIMIT $1`,
+      [limit]
+    );
+
+    // Agregar happyrobot_link si existe run_id
+    const emergenciesWithLinks = result.rows.map(emergency => ({
+      ...emergency,
+      happyrobot_link: emergency.run_id 
+        ? `https://v2.platform.happyrobot.ai/antonio/workflow/shzu8lzuhftc/runs?run_id=${emergency.run_id}`
+        : null
+    }));
+
+    res.json(emergenciesWithLinks);
+  } catch (error) {
+    console.error('Error en /emergencies/recent:', error);
+    res.status(500).json({
+      error: 'Error al obtener emergencias recientes',
+      details: error.message
+    });
+  }
+});
+
 // Obtener una emergencia específica
 router.get('/:id', async (req, res) => {
   try {

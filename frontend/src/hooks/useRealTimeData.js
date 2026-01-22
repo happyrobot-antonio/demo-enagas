@@ -44,7 +44,8 @@ export function useRealTimeTickets(interval = 3000) {
   const fetchTickets = useCallback(async () => {
     try {
       const data = await api.getRecentTickets();
-      setTickets(data.tickets || []);
+      // API devuelve array directamente
+      setTickets(Array.isArray(data) ? data : []);
       if (isInitialLoad.current) {
         setLoading(false);
         isInitialLoad.current = false;
