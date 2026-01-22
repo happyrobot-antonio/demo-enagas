@@ -153,8 +153,8 @@ const PRL = () => {
   const getActionButton = (worker) => {
     if (calling === worker.id) {
       return (
-        <Button variant="warning" size="sm" disabled className="w-full">
-          <Phone className="h-4 w-4 mr-2 animate-pulse" />
+        <Button variant="warning" size="sm" disabled className="h-8 px-3 text-xs">
+          <Phone className="h-3 w-3 mr-1.5 animate-pulse" />
           Iniciando...
         </Button>
       )
@@ -162,8 +162,8 @@ const PRL = () => {
 
     if (worker.checklist_estado === 'EN_CURSO') {
       return (
-        <Button variant="warning" size="sm" disabled className="w-full">
-          <Phone className="h-4 w-4 mr-2 animate-pulse" />
+        <Button variant="warning" size="sm" disabled className="h-8 px-3 text-xs">
+          <Phone className="h-3 w-3 mr-1.5 animate-pulse" />
           Llamando...
         </Button>
       )
@@ -171,7 +171,7 @@ const PRL = () => {
 
     if (worker.checklist_estado === 'COMPLETADO') {
       return (
-        <Button variant="ghost" size="sm" className="w-full">
+        <Button variant="ghost" size="sm" className="h-8 px-3 text-xs">
           Ver Detalle
         </Button>
       )
@@ -183,9 +183,9 @@ const PRL = () => {
           variant={worker.prioridad === 'CRITICA' ? 'destructive' : 'primary'}
           size="sm"
           onClick={() => handleCall(worker.id)}
-          className="w-full"
+          className="h-8 px-3 text-xs"
         >
-          <Phone className="h-4 w-4 mr-2" />
+          <Phone className="h-3 w-3 mr-1.5" />
           LLAMAR
         </Button>
       )
