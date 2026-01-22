@@ -103,6 +103,45 @@ const PRL = () => {
   const handleCall = async (workerId) => {
     try {
       setCalling(workerId)
+      
+      // Obtener datos del trabajador
+      const worker = workers.find(w => w.id === workerId)
+      if (!worker) {
+        console.error('Trabajador no encontrado')
+        setCalling(null)
+        return
+      }
+
+      // 1. Llamar al webhook de HappyRobot para iniciar la llamada telefónica
+      try {
+        const webhookResponse = await fetch('https://workflows.platform.happyrobot.ai/hooks/xvjhfhj8fgho', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            worker_id: worker.id,
+            employee_id: worker.employee_id,
+            nombre_completo: worker.nombre_completo,
+            telefono: worker.telefono,
+            tipo_trabajo: worker.tipo_trabajo,
+            descripcion_tarea: worker.descripcion_tarea,
+            ubicacion_trabajo: worker.ubicacion_trabajo,
+            prioridad: worker.prioridad,
+            empresa: worker.empresa,
+            riesgos_identificados: worker.riesgos_identificados,
+            equipos_proteccion_requeridos: worker.equipos_proteccion_requeridos
+          })
+        })
+        
+        const webhookData = await webhookResponse.json()
+        console.log('Webhook HappyRobot ejecutado:', webhookData)
+      } catch (webhookError) {
+        console.error('Error al llamar webhook HappyRobot:', webhookError)
+        // Continuar aunque falle el webhook
+      }
+
+      // 2. Registrar la llamada en la API local
       const response = await api.post('/api/prl/calls/initiate', { worker_id: workerId })
       
       if (response.success) {
