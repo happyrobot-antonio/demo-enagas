@@ -30,6 +30,28 @@ class ApiClient {
     }
   }
 
+  // Generic GET
+  async get(endpoint, params = {}) {
+    const queryString = new URLSearchParams(params).toString()
+    return this.request(`${endpoint}${queryString ? `?${queryString}` : ''}`)
+  }
+
+  // Generic POST
+  async post(endpoint, data) {
+    return this.request(endpoint, {
+      method: 'POST',
+      body: JSON.stringify(data),
+    })
+  }
+
+  // Generic PATCH
+  async patch(endpoint, data) {
+    return this.request(endpoint, {
+      method: 'PATCH',
+      body: JSON.stringify(data),
+    })
+  }
+
   // Tickets
   async getTickets(params = {}) {
     const queryString = new URLSearchParams(params).toString()

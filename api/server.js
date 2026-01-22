@@ -13,6 +13,7 @@ const searchesRouter = require('./routes/searches');
 const systemRouter = require('./routes/system');
 const statsRouter = require('./routes/stats');
 const callsRouter = require('./routes/calls');
+const prlRouter = require('./routes/prl');
 
 const app = express();
 const server = http.createServer(app);
@@ -64,6 +65,7 @@ app.use('/api/searches', searchesRouter);
 app.use('/api/system-status', systemRouter);
 app.use('/api/stats', statsRouter);
 app.use('/api/calls', callsRouter);
+app.use('/api/prl', prlRouter);
 
 // Ruta raíz
 app.get('/', (req, res) => {
@@ -78,7 +80,8 @@ app.get('/', (req, res) => {
       searches: '/api/searches',
       systemStatus: '/api/system-status',
       stats: '/api/stats',
-      calls: '/api/calls'
+      calls: '/api/calls',
+      prl: '/api/prl'
     }
   });
 });
