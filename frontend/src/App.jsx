@@ -4,6 +4,8 @@ import Dashboard from './pages/Dashboard'
 import Tickets from './pages/Tickets'
 import Emergencies from './pages/Emergencies'
 import Calls from './pages/Calls'
+import Searches from './pages/Searches'
+import Transfers from './pages/Transfers'
 import { SocketProvider } from './context/SocketContext'
 import { ThemeProvider } from './context/ThemeContext'
 
@@ -18,6 +20,8 @@ function App() {
               <Route path="/tickets" element={<Tickets />} />
               <Route path="/emergencies" element={<Emergencies />} />
               <Route path="/calls" element={<Calls />} />
+              <Route path="/searches" element={<Searches />} />
+              <Route path="/transfers" element={<Transfers />} />
             </Routes>
           </Layout>
         </Router>

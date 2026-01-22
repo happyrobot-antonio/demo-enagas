@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom'
-import { Home, FileText, AlertTriangle, Phone, Activity } from 'lucide-react'
+import { Home, FileText, AlertTriangle, Phone, Activity, Search, ArrowRightLeft } from 'lucide-react'
 import { useSocket } from '../context/SocketContext'
 import ThemeToggle from './ThemeToggle'
 import { useEffect, useRef } from 'react'
@@ -17,6 +17,8 @@ const Layout = ({ children }) => {
     { name: 'Tickets', path: '/tickets', icon: FileText, badge: stats.tickets_abiertos },
     { name: 'Emergencias', path: '/emergencies', icon: AlertTriangle, badge: stats.emergencias_activas },
     { name: 'Llamadas', path: '/calls', icon: Phone, badge: stats.llamadas_en_curso },
+    { name: 'Búsquedas', path: '/searches', icon: Search },
+    { name: 'Transferencias', path: '/transfers', icon: ArrowRightLeft, badge: stats.transferencias_pendientes },
   ]
 
   // Page transition animation

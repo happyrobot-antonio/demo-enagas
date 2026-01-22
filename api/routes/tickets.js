@@ -6,32 +6,22 @@ const { query } = require('../config/database');
 router.post('/', async (req, res) => {
   try {
     const {
+      tipo,
       descripcion,
-      nombre_contacto,
-      telefono_contacto,
-      email_contacto,
-      empresa_contacto,
-      tipo = 'INCIDENCIA_TECNICA',
       usuario_afectado,
       sistema,
+      contacto,
       prioridad = 'MEDIA',
       notas
     } = req.body;
 
-    // Validación mínima: solo descripción es obligatoria
-    if (!descripcion) {
+    // Validaciones
+    if (!tipo || !descripcion || !contacto) {
       return res.status(400).json({
-        error: 'Campo "descripcion" es requerido'
+        error: 'Faltan campos requeridos',
+        required: ['tipo', 'descripcion', 'contacto']
       });
     }
-
-    // Construir objeto contacto con valores por defecto
-    const contacto = {
-      nombre: nombre_contacto || 'Usuario GTS',
-      telefono: telefono_contacto || 'No especificado',
-      email: email_contacto || 'no-especificado@gts.es',
-      empresa: empresa_contacto || 'GTS'
-    };
 
     // Calcular tiempo de respuesta estimado según prioridad
     const tiemposRespuesta = {

@@ -95,6 +95,16 @@ class ApiClient {
     })
   }
 
+  // Búsquedas en documentación
+  async getSearches(params = {}) {
+    const queryString = new URLSearchParams(params).toString()
+    return this.request(`/api/searches${queryString ? `?${queryString}` : ''}`)
+  }
+
+  async getRecentSearches() {
+    return this.request('/api/searches/recent')
+  }
+
   // Llamadas
   async getCalls(params = {}) {
     const queryString = new URLSearchParams(params).toString()

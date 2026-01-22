@@ -6,29 +6,19 @@ const { query } = require('../config/database');
 router.post('/', async (req, res) => {
   try {
     const {
-      consulta,
-      area,
-      nombre_usuario,
-      telefono_usuario,
-      email_usuario,
+      area_destino,
+      resumen_consulta,
+      datos_usuario,
       ticket_id
     } = req.body;
 
-    // Validación mínima: solo consulta y área
-    if (!consulta || !area) {
+    // Validaciones
+    if (!area_destino || !resumen_consulta || !datos_usuario) {
       return res.status(400).json({
-        error: 'Campos "consulta" y "area" son requeridos'
+        error: 'Faltan campos requeridos',
+        required: ['area_destino', 'resumen_consulta', 'datos_usuario']
       });
     }
-
-    // Valores por defecto
-    const area_destino = area;
-    const resumen_consulta = consulta;
-    const datos_usuario = {
-      nombre: nombre_usuario || 'Usuario GTS',
-      telefono: telefono_usuario || 'No especificado',
-      email: email_usuario || 'no-especificado@gts.es'
-    };
 
     const result = await query(
       `INSERT INTO transfers (

@@ -39,39 +39,23 @@ Obtiene estadísticas generales del sistema.
 #### `POST /api/tickets`
 Crea un nuevo ticket (tool: `create_gts_ticket`).
 
-**Request Body (SIMPLIFICADO):**
+**Request Body:**
 ```json
 {
-  "descripcion": "Error de autenticación en SL-ATR",
-  "nombre_contacto": "Javier Ruiz"
-}
-```
-
-**Request Body (COMPLETO - Opcional):**
-```json
-{
-  "descripcion": "Error de autenticación en SL-ATR",
-  "nombre_contacto": "Javier Ruiz",
-  "telefono_contacto": "600123456",
-  "email_contacto": "jruiz@gasdistribucion.es",
-  "empresa_contacto": "GasDistribución Sur",
   "tipo": "INCIDENCIA_TECNICA",
+  "descripcion": "Error de autenticación en SL-ATR",
   "usuario_afectado": "jruiz_gasur",
   "sistema": "SL-ATR",
+  "contacto": {
+    "nombre": "Javier Ruiz",
+    "empresa": "GasDistribución Sur",
+    "telefono": "600123456",
+    "email": "jruiz@gasdistribucion.es"
+  },
   "prioridad": "ALTA",
   "notas": "El usuario no puede acceder desde ayer"
 }
 ```
-
-**Campos:**
-- ✅ **descripcion** (REQUERIDO): Descripción del problema
-- ⭕ **nombre_contacto** (opcional): Nombre de contacto (default: "Usuario GTS")
-- ⭕ **telefono_contacto** (opcional): Teléfono (default: "No especificado")
-- ⭕ **email_contacto** (opcional): Email (default: "no-especificado@gts.es")
-- ⭕ **empresa_contacto** (opcional): Empresa (default: "GTS")
-- ⭕ **tipo** (opcional): INCIDENCIA_TECNICA | CONSULTA_ESPECIALIZADA | RECLAMACION
-- ⭕ **prioridad** (opcional): CRITICA | ALTA | MEDIA | BAJA
-- ⭕ Resto de campos opcionales
 
 **Response:**
 ```json
@@ -124,36 +108,22 @@ Obtiene tickets abiertos (últimos 20).
 #### `POST /api/emergencies`
 Activa un protocolo de emergencia (tool: `activate_emergency_protocol`).
 
-**Request Body (SIMPLIFICADO):**
+**Request Body:**
 ```json
 {
-  "descripcion": "Olor intenso a gas detectado cerca de instalación vallada",
-  "ubicacion": "Polígono Industrial Las Américas, Getafe, Madrid"
-}
-```
-
-**Request Body (COMPLETO - Opcional):**
-```json
-{
-  "descripcion": "Olor intenso a gas detectado cerca de instalación vallada",
-  "ubicacion": "Polígono Industrial Las Américas, Getafe, Madrid, calle Industria 5-7",
-  "nombre_llamante": "Antonio Fernández",
-  "telefono_llamante": "655432109",
   "tipo_incidente": "FUGA",
+  "ubicacion_completa": "Polígono Industrial Las Américas, Getafe, Madrid, calle Industria 5-7",
+  "contacto_llamante": {
+    "nombre": "Antonio Fernández",
+    "telefono": "655432109",
+    "empresa": "Gestión de Polígonos"
+  },
+  "descripcion_situacion": "Olor intenso a gas detectado cerca de instalación vallada",
   "nivel_riesgo": "MEDIO",
   "municipio": "Getafe",
   "provincia": "Madrid"
 }
 ```
-
-**Campos:**
-- ✅ **descripcion** (REQUERIDO): Descripción de la emergencia
-- ✅ **ubicacion** (REQUERIDO): Ubicación del incidente
-- ⭕ **nombre_llamante** (opcional): Nombre (default: "Usuario GTS")
-- ⭕ **telefono_llamante** (opcional): Teléfono (default: "900123456")
-- ⭕ **tipo_incidente** (opcional): FUGA | DAÑO_INFRAESTRUCTURA | OBRAS_NO_AUTORIZADAS | ANOMALIA_CRITICA
-- ⭕ **nivel_riesgo** (opcional): CRITICO | ALTO | MEDIO | BAJO
-- ⭕ Resto de campos opcionales
 
 **Response:**
 ```json
@@ -195,33 +165,20 @@ Actualiza una emergencia.
 #### `POST /api/transfers`
 Registra una transferencia a especialista (tool: `transfer_to_specialist`).
 
-**Request Body (SIMPLIFICADO):**
+**Request Body:**
 ```json
 {
-  "consulta": "Consulta técnica sobre capacidades de inyección en Planta de Huelva",
-  "area": "Operaciones"
-}
-```
-
-**Request Body (COMPLETO - Opcional):**
-```json
-{
-  "consulta": "Consulta técnica sobre capacidades de inyección en Planta de Huelva",
-  "area": "Operaciones",
-  "nombre_usuario": "Laura Gómez",
-  "telefono_usuario": "600987654",
-  "email_usuario": "laura.gomez@enerplus.es",
+  "area_destino": "Operaciones",
+  "resumen_consulta": "Consulta técnica sobre capacidades de inyección en Planta de Huelva",
+  "datos_usuario": {
+    "nombre": "Laura Gómez",
+    "empresa": "EnerPlus",
+    "telefono": "600987654",
+    "email": "laura.gomez@enerplus.es"
+  },
   "ticket_id": "uuid-opcional"
 }
 ```
-
-**Campos:**
-- ✅ **consulta** (REQUERIDO): Resumen de la consulta
-- ✅ **area** (REQUERIDO): Área destino (Operaciones, GTS Internacional, Comercial, etc.)
-- ⭕ **nombre_usuario** (opcional): Nombre (default: "Usuario GTS")
-- ⭕ **telefono_usuario** (opcional): Teléfono (default: "No especificado")
-- ⭕ **email_usuario** (opcional): Email (default: "no-especificado@gts.es")
-- ⭕ **ticket_id** (opcional): ID de ticket relacionado
 
 #### `GET /api/transfers`
 Lista todas las transferencias.
@@ -233,14 +190,7 @@ Lista todas las transferencias.
 #### `POST /api/searches`
 Registra una búsqueda en documentación (tool: `search_gts_documentation`).
 
-**Request Body (SIMPLIFICADO):**
-```json
-{
-  "query": "habilitación punto suministro documentación cliente directo"
-}
-```
-
-**Request Body (COMPLETO - Opcional):**
+**Request Body:**
 ```json
 {
   "query": "habilitación punto suministro documentación cliente directo",
@@ -256,12 +206,6 @@ Registra una búsqueda en documentación (tool: `search_gts_documentation`).
   ]
 }
 ```
-
-**Campos:**
-- ✅ **query** (REQUERIDO): Términos de búsqueda
-- ⭕ **tipo_proceso** (opcional): Tipo de proceso (default: "consulta_general")
-- ⭕ **usuario_solicitante** (opcional): Usuario (default: "Usuario GTS")
-- ⭕ Resto de campos opcionales
 
 #### `GET /api/searches`
 Historial de búsquedas.
