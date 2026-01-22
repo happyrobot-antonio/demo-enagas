@@ -87,7 +87,7 @@ const Layout = ({ children }) => {
       </header>
 
       {/* Side Navigation Rail */}
-      <aside className="fixed left-0 top-16 bottom-0 w-24 border-r border-border bg-background/50 backdrop-blur-sm z-40">
+      <aside className="fixed left-0 top-16 bottom-0 w-24 border-r border-border bg-background/50 backdrop-blur-sm z-40 flex flex-col">
         {/* Logo HappyRobot */}
         <div className="flex items-center justify-center py-6 border-b border-border">
           <img 
@@ -97,7 +97,7 @@ const Layout = ({ children }) => {
           />
         </div>
         
-        <nav className="flex flex-col items-center py-6 h-full">
+        <nav className="flex flex-col items-center py-6 flex-1">
           {/* Main Navigation */}
           <div className="space-y-2 flex-1">
             {mainNavigation.map((item) => {
@@ -140,7 +140,7 @@ const Layout = ({ children }) => {
           </div>
 
           {/* PRL Section - Separated */}
-          <div className="pt-6 border-t border-border w-16">
+          <div className="w-full pt-6 pb-6 border-t border-border flex items-center justify-center">
             {prlNavigation.map((item) => {
               const Icon = item.icon
               const isActive = location.pathname === item.path
