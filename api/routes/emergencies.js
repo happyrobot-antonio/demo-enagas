@@ -13,7 +13,8 @@ router.post('/', async (req, res) => {
       nivel_riesgo,
       coordenadas,
       municipio,
-      provincia
+      provincia,
+      run_id
     } = req.body;
 
     // Validaciones
@@ -38,17 +39,22 @@ router.post('/', async (req, res) => {
       `INSERT INTO emergencies (
         tipo_incidente, ubicacion_completa, contacto_llamante,
         descripcion_situacion, nivel_riesgo, coordenadas,
-        municipio, provincia, tiempo_estimado_llegada
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+        municipio, provincia, tiempo_estimado_llegada, run_id
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
       RETURNING *`,
       [
         tipo_incidente, ubicacion_completa, JSON.stringify(contacto_llamante),
         descripcion_situacion, nivel_riesgo, coordenadas ? JSON.stringify(coordenadas) : null,
-        municipio, provincia, tiempo_estimado_llegada
+        municipio, provincia, tiempo_estimado_llegada, run_id
       ]
     );
 
     const emergency = result.rows[0];
+
+    // Generar link a HappyRobot si existe run_id
+    if (emergency.run_id) {
+      emergency.happyrobot_link = `https://v2.platform.happyrobot.ai/antonio/workflow/shzu8lzuhftc/runs?run_id=${emergency.run_id}`;
+    }
 
     // Emitir alerta crítica en tiempo real
     req.io.emit('emergency:activated', {
@@ -105,12 +111,20 @@ router.get('/', async (req, res) => {
 
     const result = await query(queryText, params);
 
+    // Agregar link a HappyRobot para emergencias con run_id
+    const emergenciesWithLinks = result.rows.map(emergency => ({
+      ...emergency,
+      happyrobot_link: emergency.run_id 
+        ? `https://v2.platform.happyrobot.ai/antonio/workflow/shzu8lzuhftc/runs?run_id=${emergency.run_id}`
+        : null
+    }));
+
     const countResult = await query('SELECT COUNT(*) FROM emergencies WHERE 1=1');
     const total = parseInt(countResult.rows[0].count);
 
     res.json({
       success: true,
-      emergencies: result.rows,
+      emergencies: emergenciesWithLinks,
       pagination: {
         total,
         limit: parseInt(limit),
@@ -137,10 +151,18 @@ router.get('/active', async (req, res) => {
        ORDER BY nivel_riesgo DESC, created_at DESC`
     );
 
+    // Agregar link a HappyRobot para emergencias con run_id
+    const emergenciesWithLinks = result.rows.map(emergency => ({
+      ...emergency,
+      happyrobot_link: emergency.run_id 
+        ? `https://v2.platform.happyrobot.ai/antonio/workflow/shzu8lzuhftc/runs?run_id=${emergency.run_id}`
+        : null
+    }));
+
     res.json({
       success: true,
-      emergencies: result.rows,
-      count: result.rows.length
+      emergencies: emergenciesWithLinks,
+      count: emergenciesWithLinks.length
     });
 
   } catch (error) {

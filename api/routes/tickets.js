@@ -12,7 +12,8 @@ router.post('/', async (req, res) => {
       sistema,
       contacto,
       prioridad = 'MEDIA',
-      notas
+      notas,
+      run_id
     } = req.body;
 
     // Validaciones
@@ -36,14 +37,19 @@ router.post('/', async (req, res) => {
     const result = await query(
       `INSERT INTO tickets (
         tipo, descripcion, usuario_afectado, sistema, 
-        contacto, prioridad, tiempo_respuesta_estimado, notas
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+        contacto, prioridad, tiempo_respuesta_estimado, notas, run_id
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
       RETURNING *`,
       [tipo, descripcion, usuario_afectado, sistema, 
-       JSON.stringify(contacto), prioridad, tiempo_respuesta_estimado, notas]
+       JSON.stringify(contacto), prioridad, tiempo_respuesta_estimado, notas, run_id]
     );
 
     const ticket = result.rows[0];
+
+    // Generar link a HappyRobot si existe run_id
+    if (ticket.run_id) {
+      ticket.happyrobot_link = `https://v2.platform.happyrobot.ai/antonio/workflow/shzu8lzuhftc/runs?run_id=${ticket.run_id}`;
+    }
 
     // Emitir evento en tiempo real vía WebSocket
     req.io.emit('ticket:created', ticket);
@@ -95,13 +101,21 @@ router.get('/', async (req, res) => {
 
     const result = await query(queryText, params);
 
+    // Agregar link a HappyRobot para tickets con run_id
+    const ticketsWithLinks = result.rows.map(ticket => ({
+      ...ticket,
+      happyrobot_link: ticket.run_id 
+        ? `https://v2.platform.happyrobot.ai/antonio/workflow/shzu8lzuhftc/runs?run_id=${ticket.run_id}`
+        : null
+    }));
+
     // Obtener total de tickets para paginación
     const countResult = await query('SELECT COUNT(*) FROM tickets WHERE 1=1');
     const total = parseInt(countResult.rows[0].count);
 
     res.json({
       success: true,
-      tickets: result.rows,
+      tickets: ticketsWithLinks,
       pagination: {
         total,
         limit: parseInt(limit),

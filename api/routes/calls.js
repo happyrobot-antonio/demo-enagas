@@ -11,19 +11,25 @@ router.post('/', async (req, res) => {
       telefono,
       tipo_consulta,
       categoria,
-      notas
+      notas,
+      run_id
     } = req.body;
 
     const result = await query(
       `INSERT INTO calls (
         nombre_llamante, empresa, telefono, 
-        tipo_consulta, categoria, notas, estado
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7)
+        tipo_consulta, categoria, notas, estado, run_id
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
       RETURNING *`,
-      [nombre_llamante, empresa, telefono, tipo_consulta, categoria, notas, 'EN_CURSO']
+      [nombre_llamante, empresa, telefono, tipo_consulta, categoria, notas, 'EN_CURSO', run_id]
     );
 
     const call = result.rows[0];
+
+    // Generar link a HappyRobot si existe run_id
+    if (call.run_id) {
+      call.happyrobot_link = `https://v2.platform.happyrobot.ai/antonio/workflow/shzu8lzuhftc/runs?run_id=${call.run_id}`;
+    }
 
     // Emitir evento en tiempo real
     req.io.emit('call:started', call);
@@ -69,12 +75,20 @@ router.get('/', async (req, res) => {
 
     const result = await query(queryText, params);
 
+    // Agregar link a HappyRobot para llamadas con run_id
+    const callsWithLinks = result.rows.map(call => ({
+      ...call,
+      happyrobot_link: call.run_id 
+        ? `https://v2.platform.happyrobot.ai/antonio/workflow/shzu8lzuhftc/runs?run_id=${call.run_id}`
+        : null
+    }));
+
     const countResult = await query('SELECT COUNT(*) FROM calls');
     const total = parseInt(countResult.rows[0].count);
 
     res.json({
       success: true,
-      calls: result.rows,
+      calls: callsWithLinks,
       pagination: {
         total,
         limit: parseInt(limit),
@@ -162,10 +176,18 @@ router.get('/active', async (req, res) => {
        ORDER BY started_at DESC`
     );
 
+    // Agregar link a HappyRobot para llamadas con run_id
+    const callsWithLinks = result.rows.map(call => ({
+      ...call,
+      happyrobot_link: call.run_id 
+        ? `https://v2.platform.happyrobot.ai/antonio/workflow/shzu8lzuhftc/runs?run_id=${call.run_id}`
+        : null
+    }));
+
     res.json({
       success: true,
-      calls: result.rows,
-      count: result.rows.length
+      calls: callsWithLinks,
+      count: callsWithLinks.length
     });
 
   } catch (error) {

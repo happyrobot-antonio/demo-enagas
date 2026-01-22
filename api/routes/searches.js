@@ -11,7 +11,8 @@ router.post('/', async (req, res) => {
       usuario_solicitante,
       contexto,
       resultados_count = 0,
-      documentos_encontrados
+      documentos_encontrados,
+      run_id
     } = req.body;
 
     // Validaciones
@@ -24,8 +25,8 @@ router.post('/', async (req, res) => {
     const result = await query(
       `INSERT INTO documentation_searches (
         query, tipo_proceso, usuario_solicitante, 
-        contexto, resultados_count, documentos_encontrados
-      ) VALUES ($1, $2, $3, $4, $5, $6)
+        contexto, resultados_count, documentos_encontrados, run_id
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7)
       RETURNING *`,
       [
         searchQuery,
@@ -33,11 +34,17 @@ router.post('/', async (req, res) => {
         usuario_solicitante,
         contexto,
         resultados_count,
-        documentos_encontrados ? JSON.stringify(documentos_encontrados) : null
+        documentos_encontrados ? JSON.stringify(documentos_encontrados) : null,
+        run_id
       ]
     );
 
     const search = result.rows[0];
+
+    // Generar link a HappyRobot si existe run_id
+    if (search.run_id) {
+      search.happyrobot_link = `https://v2.platform.happyrobot.ai/antonio/workflow/shzu8lzuhftc/runs?run_id=${search.run_id}`;
+    }
 
     // Emitir evento en tiempo real
     req.io.emit('search:performed', search);
@@ -77,12 +84,20 @@ router.get('/', async (req, res) => {
 
     const result = await query(queryText, params);
 
+    // Agregar link a HappyRobot para búsquedas con run_id
+    const searchesWithLinks = result.rows.map(search => ({
+      ...search,
+      happyrobot_link: search.run_id 
+        ? `https://v2.platform.happyrobot.ai/antonio/workflow/shzu8lzuhftc/runs?run_id=${search.run_id}`
+        : null
+    }));
+
     const countResult = await query('SELECT COUNT(*) FROM documentation_searches');
     const total = parseInt(countResult.rows[0].count);
 
     res.json({
       success: true,
-      searches: result.rows,
+      searches: searchesWithLinks,
       pagination: {
         total,
         limit: parseInt(limit),
@@ -109,10 +124,18 @@ router.get('/recent', async (req, res) => {
        LIMIT 20`
     );
 
+    // Agregar link a HappyRobot para búsquedas con run_id
+    const searchesWithLinks = result.rows.map(search => ({
+      ...search,
+      happyrobot_link: search.run_id 
+        ? `https://v2.platform.happyrobot.ai/antonio/workflow/shzu8lzuhftc/runs?run_id=${search.run_id}`
+        : null
+    }));
+
     res.json({
       success: true,
-      searches: result.rows,
-      count: result.rows.length
+      searches: searchesWithLinks,
+      count: searchesWithLinks.length
     });
 
   } catch (error) {

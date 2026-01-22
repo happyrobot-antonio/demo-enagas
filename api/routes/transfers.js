@@ -9,7 +9,8 @@ router.post('/', async (req, res) => {
       area_destino,
       resumen_consulta,
       datos_usuario,
-      ticket_id
+      ticket_id,
+      run_id
     } = req.body;
 
     // Validaciones
@@ -22,13 +23,18 @@ router.post('/', async (req, res) => {
 
     const result = await query(
       `INSERT INTO transfers (
-        area_destino, resumen_consulta, datos_usuario, ticket_id, estado
-      ) VALUES ($1, $2, $3, $4, $5)
+        area_destino, resumen_consulta, datos_usuario, ticket_id, estado, run_id
+      ) VALUES ($1, $2, $3, $4, $5, $6)
       RETURNING *`,
-      [area_destino, resumen_consulta, JSON.stringify(datos_usuario), ticket_id, 'PENDIENTE']
+      [area_destino, resumen_consulta, JSON.stringify(datos_usuario), ticket_id, 'PENDIENTE', run_id]
     );
 
     const transfer = result.rows[0];
+
+    // Generar link a HappyRobot si existe run_id
+    if (transfer.run_id) {
+      transfer.happyrobot_link = `https://v2.platform.happyrobot.ai/antonio/workflow/shzu8lzuhftc/runs?run_id=${transfer.run_id}`;
+    }
 
     // Emitir evento en tiempo real
     req.io.emit('transfer:created', transfer);
@@ -74,12 +80,20 @@ router.get('/', async (req, res) => {
 
     const result = await query(queryText, params);
 
+    // Agregar link a HappyRobot para transferencias con run_id
+    const transfersWithLinks = result.rows.map(transfer => ({
+      ...transfer,
+      happyrobot_link: transfer.run_id 
+        ? `https://v2.platform.happyrobot.ai/antonio/workflow/shzu8lzuhftc/runs?run_id=${transfer.run_id}`
+        : null
+    }));
+
     const countResult = await query('SELECT COUNT(*) FROM transfers');
     const total = parseInt(countResult.rows[0].count);
 
     res.json({
       success: true,
-      transfers: result.rows,
+      transfers: transfersWithLinks,
       pagination: {
         total,
         limit: parseInt(limit),

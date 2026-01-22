@@ -21,6 +21,7 @@ CREATE TABLE IF NOT EXISTS tickets (
     -- Metadatos
     notas TEXT,
     tiempo_respuesta_estimado INTEGER, -- en minutos
+    run_id VARCHAR(255), -- ID de ejecución de HappyRobot
     
     -- Auditoría
     created_at TIMESTAMP DEFAULT NOW(),
@@ -57,6 +58,7 @@ CREATE TABLE IF NOT EXISTS emergencies (
     estado VARCHAR(30) DEFAULT 'ACTIVA' CHECK (estado IN ('ACTIVA', 'EN_ATENCION', 'CONTROLADA', 'RESUELTA', 'FALSA_ALARMA')),
     equipo_asignado VARCHAR(255),
     tiempo_estimado_llegada INTEGER, -- en minutos
+    run_id VARCHAR(255), -- ID de ejecución de HappyRobot
     
     -- Auditoría
     created_at TIMESTAMP DEFAULT NOW(),
@@ -85,6 +87,7 @@ CREATE TABLE IF NOT EXISTS transfers (
     
     -- Relación con ticket si existe
     ticket_id UUID REFERENCES tickets(id),
+    run_id VARCHAR(255), -- ID de ejecución de HappyRobot
     
     -- Auditoría
     created_at TIMESTAMP DEFAULT NOW(),
@@ -105,6 +108,7 @@ CREATE TABLE IF NOT EXISTS documentation_searches (
     -- Contexto de la búsqueda
     usuario_solicitante VARCHAR(255),
     contexto TEXT,
+    run_id VARCHAR(255), -- ID de ejecución de HappyRobot
     
     -- Auditoría
     created_at TIMESTAMP DEFAULT NOW()
@@ -152,6 +156,7 @@ CREATE TABLE IF NOT EXISTS calls (
     -- Notas de la llamada
     notas TEXT,
     resolucion TEXT,
+    run_id VARCHAR(255), -- ID de ejecución de HappyRobot
     
     -- Auditoría
     started_at TIMESTAMP DEFAULT NOW(),
