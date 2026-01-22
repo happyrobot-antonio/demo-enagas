@@ -31,7 +31,8 @@ POST /api/searches
       "titulo": "Procedimiento de Programación",
       "seccion": "Plazos de Nominación"
     }
-  ]
+  ],
+  "run_id": "abc123xyz"
 }
 ```
 
@@ -45,6 +46,7 @@ POST /api/searches
 | `contexto` | string | ❌ No | Contexto adicional de la búsqueda | "Consulta sobre nuevo punto industrial", "Duda sobre plazos" |
 | `resultados_count` | integer | ❌ No | Número de documentos encontrados | 0, 3, 5 |
 | `documentos_encontrados` | array | ❌ No | Documentos relevantes encontrados | `[{"titulo": "...", "seccion": "..."}]` |
+| `run_id` | string | ❌ No | ID de ejecución de HappyRobot para tracking | "abc123xyz" |
 
 **Ejemplo Real - Escenario "Habilitación":**
 ```json
@@ -52,7 +54,8 @@ POST /api/searches
   "query": "habilitación punto suministro documentación cliente directo red transporte",
   "tipo_proceso": "habilitacion",
   "usuario_solicitante": "Laura Gómez",
-  "contexto": "Comercializadora EnerPlus consultando documentación necesaria para cliente industrial"
+  "contexto": "Comercializadora EnerPlus consultando documentación necesaria para cliente industrial",
+  "run_id": "abc123xyz"
 }
 ```
 
@@ -62,7 +65,8 @@ POST /api/searches
   "query": "plazo límite modificación nominación día D-1",
   "tipo_proceso": "programacion",
   "usuario_solicitante": "Sergio Martín",
-  "contexto": "Consulta sobre horario límite para modificar nominación"
+  "contexto": "Consulta sobre horario límite para modificar nominación",
+  "run_id": "abc123xyz"
 }
 ```
 
@@ -94,7 +98,8 @@ POST /api/tickets
     "email": "jruiz@gasdistribucion.es"
   },
   "prioridad": "ALTA",
-  "notas": "El usuario intentó recuperar contraseña sin éxito"
+  "notas": "El usuario intentó recuperar contraseña sin éxito",
+  "run_id": "abc123xyz"
 }
 ```
 
@@ -109,6 +114,7 @@ POST /api/tickets
 | `sistema` | string | ❌ No | Sistema donde ocurre el problema | `SL-ATR`, `EnergyData`, `Portal Transportista`, `Telemedida` |
 | `prioridad` | string | ❌ No | Prioridad del ticket | `CRITICA`, `ALTA`, `MEDIA`, `BAJA` (default: `MEDIA`) |
 | `notas` | string | ❌ No | Notas adicionales o contexto | "Intentó recuperar contraseña sin éxito", "Problema desde esta mañana" |
+| `run_id` | string | ❌ No | ID de ejecución de HappyRobot para tracking | "abc123xyz" |
 
 **Prioridad según el Prompt:**
 - `CRITICA`: Sistema SL-ATR caído, imposibilidad total de nominar
@@ -176,7 +182,8 @@ POST /api/transfers
     "telefono": "600987654",
     "email": "laura.gomez@enerplus.es"
   },
-  "ticket_id": null
+  "ticket_id": null,
+  "run_id": "abc123xyz"
 }
 ```
 
@@ -188,6 +195,7 @@ POST /api/transfers
 | `resumen_consulta` | string | ✅ SÍ | Resumen claro de la consulta del usuario | "Cliente solicita información sobre capacidades en Planta de Huelva" |
 | `datos_usuario` | object | ✅ SÍ | Información del usuario | `{"nombre": "...", "empresa": "...", "telefono": "...", "email": "..."}` |
 | `ticket_id` | string/uuid | ❌ No | ID de ticket relacionado (si existe) | UUID del ticket previo |
+| `run_id` | string | ❌ No | ID de ejecución de HappyRobot para tracking | "abc123xyz" |
 
 **Áreas de Destino (según el Prompt):**
 
@@ -260,7 +268,8 @@ POST /api/emergencies
   "nivel_riesgo": "MEDIO",
   "municipio": "Getafe",
   "provincia": "Madrid",
-  "coordenadas": null
+  "coordenadas": null,
+  "run_id": "abc123xyz"
 }
 ```
 
@@ -276,6 +285,7 @@ POST /api/emergencies
 | `municipio` | string | ❌ No | Municipio | "Getafe", "Valladolid" |
 | `provincia` | string | ❌ No | Provincia | "Madrid", "Valladolid" |
 | `coordenadas` | object | ❌ No | Coordenadas GPS si están disponibles | `{"lat": 40.305, "lng": -3.732}` |
+| `run_id` | string | ❌ No | ID de ejecución de HappyRobot para tracking | "abc123xyz" |
 
 **Niveles de Riesgo (según situación):**
 
