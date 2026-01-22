@@ -1,12 +1,13 @@
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useState, useRef, useCallback } from 'react'
 import { Search, RefreshCw, MapPin, Clock } from 'lucide-react'
 import Badge from '../components/Badge'
 import Card from '../components/Card'
 import Button from '../components/Button'
 import Input from '../components/Input'
+import LiveIndicator from '../components/LiveIndicator'
 import { api } from '../utils/api'
 import { formatDate, formatRelativeTime, getRiesgoColor, getEstadoColor } from '../utils/formatters'
-import { useSocket } from '../context/SocketContext'
+import { POLLING_INTERVALS } from '../config/polling'
 import gsap from 'gsap'
 import clsx from 'clsx'
 
@@ -16,12 +17,32 @@ const Emergencies = () => {
   const [searchTerm, setSearchTerm] = useState('')
   const [filterEstado, setFilterEstado] = useState('')
   const [filterRiesgo, setFilterRiesgo] = useState('')
-  const { newEmergency } = useSocket()
   const containerRef = useRef(null)
+
+  const fetchEmergencies = useCallback(async () => {
+    try {
+      setLoading(true)
+      const params = {}
+      if (filterEstado) params.estado = filterEstado
+      if (filterRiesgo) params.nivel_riesgo = filterRiesgo
+
+      const response = await api.getEmergencies(params)
+      if (response.success) {
+        setEmergencies(response.emergencies)
+      }
+      setLoading(false)
+    } catch (error) {
+      console.error('Error al cargar emergencias:', error)
+      setLoading(false)
+    }
+  }, [filterEstado, filterRiesgo])
 
   useEffect(() => {
     fetchEmergencies()
-  }, [filterEstado, filterRiesgo, newEmergency])
+    // Polling constante cada 2 segundos
+    const interval = setInterval(fetchEmergencies, POLLING_INTERVALS.EMERGENCIES)
+    return () => clearInterval(interval)
+  }, [fetchEmergencies])
 
   useEffect(() => {
     if (!loading && containerRef.current) {
@@ -39,24 +60,6 @@ const Emergencies = () => {
       )
     }
   }, [loading, emergencies])
-
-  const fetchEmergencies = async () => {
-    try {
-      setLoading(true)
-      const params = {}
-      if (filterEstado) params.estado = filterEstado
-      if (filterRiesgo) params.nivel_riesgo = filterRiesgo
-
-      const response = await api.getEmergencies(params)
-      if (response.success) {
-        setEmergencies(response.emergencies)
-      }
-      setLoading(false)
-    } catch (error) {
-      console.error('Error al cargar emergencias:', error)
-      setLoading(false)
-    }
-  }
 
   const filteredEmergencies = emergencies.filter(emergency => {
     if (!searchTerm) return true
@@ -92,10 +95,16 @@ const Emergencies = () => {
           <h1 className="text-3xl font-bold tracking-tight">Emergencias</h1>
           <p className="text-muted-foreground mt-1">Protocolos de emergencia activados</p>
         </div>
-        <Button onClick={fetchEmergencies} variant="outline">
-          <RefreshCw className="h-4 w-4 mr-2" strokeWidth={1.5} />
-          Actualizar
-        </Button>
+        <div className="flex items-center gap-4">
+          <LiveIndicator 
+            interval={POLLING_INTERVALS.EMERGENCIES}
+            lastUpdate={emergencies[0]?.updated_at || emergencies[0]?.created_at}
+          />
+          <Button onClick={fetchEmergencies} variant="outline">
+            <RefreshCw className="h-4 w-4 mr-2" strokeWidth={1.5} />
+            Actualizar
+          </Button>
+        </div>
       </div>
 
       {/* Filters Card */}

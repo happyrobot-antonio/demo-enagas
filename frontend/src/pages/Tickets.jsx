@@ -1,12 +1,13 @@
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useState, useRef, useCallback } from 'react'
 import { Search, RefreshCw, ChevronDown } from 'lucide-react'
 import Badge from '../components/Badge'
 import Card from '../components/Card'
 import Button from '../components/Button'
 import Input from '../components/Input'
+import LiveIndicator from '../components/LiveIndicator'
 import { api } from '../utils/api'
 import { formatDate, formatRelativeTime, getPriorityColor, getEstadoColor } from '../utils/formatters'
-import { useSocket } from '../context/SocketContext'
+import { POLLING_INTERVALS } from '../config/polling'
 import gsap from 'gsap'
 import clsx from 'clsx'
 
@@ -17,12 +18,32 @@ const Tickets = () => {
   const [filterEstado, setFilterEstado] = useState('')
   const [filterPrioridad, setFilterPrioridad] = useState('')
   const [expandedTicket, setExpandedTicket] = useState(null)
-  const { newTicket } = useSocket()
   const containerRef = useRef(null)
+
+  const fetchTickets = useCallback(async () => {
+    try {
+      setLoading(true)
+      const params = {}
+      if (filterEstado) params.estado = filterEstado
+      if (filterPrioridad) params.prioridad = filterPrioridad
+
+      const response = await api.getTickets(params)
+      if (response.success) {
+        setTickets(response.tickets)
+      }
+      setLoading(false)
+    } catch (error) {
+      console.error('Error al cargar tickets:', error)
+      setLoading(false)
+    }
+  }, [filterEstado, filterPrioridad])
 
   useEffect(() => {
     fetchTickets()
-  }, [filterEstado, filterPrioridad, newTicket])
+    // Polling constante cada 3 segundos
+    const interval = setInterval(fetchTickets, POLLING_INTERVALS.TICKETS)
+    return () => clearInterval(interval)
+  }, [fetchTickets])
 
   useEffect(() => {
     if (!loading && containerRef.current) {
@@ -40,24 +61,6 @@ const Tickets = () => {
       )
     }
   }, [loading, tickets])
-
-  const fetchTickets = async () => {
-    try {
-      setLoading(true)
-      const params = {}
-      if (filterEstado) params.estado = filterEstado
-      if (filterPrioridad) params.prioridad = filterPrioridad
-
-      const response = await api.getTickets(params)
-      if (response.success) {
-        setTickets(response.tickets)
-      }
-      setLoading(false)
-    } catch (error) {
-      console.error('Error al cargar tickets:', error)
-      setLoading(false)
-    }
-  }
 
   const filteredTickets = tickets.filter(ticket => {
     if (!searchTerm) return true
@@ -82,10 +85,16 @@ const Tickets = () => {
           <h1 className="text-3xl font-bold tracking-tight">Tickets</h1>
           <p className="text-muted-foreground mt-1">Gestión de incidencias y consultas</p>
         </div>
-        <Button onClick={fetchTickets} variant="outline" size="default">
-          <RefreshCw className="h-4 w-4 mr-2" strokeWidth={1.5} />
-          Actualizar
-        </Button>
+        <div className="flex items-center gap-4">
+          <LiveIndicator 
+            interval={POLLING_INTERVALS.TICKETS}
+            lastUpdate={tickets[0]?.updated_at || tickets[0]?.created_at}
+          />
+          <Button onClick={fetchTickets} variant="outline" size="default">
+            <RefreshCw className="h-4 w-4 mr-2" strokeWidth={1.5} />
+            Actualizar
+          </Button>
+        </div>
       </div>
 
       {/* Filters Card */}

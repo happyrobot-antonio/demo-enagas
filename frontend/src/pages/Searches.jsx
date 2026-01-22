@@ -1,11 +1,13 @@
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useState, useRef, useCallback } from 'react'
 import { Search, RefreshCw, TrendingUp, FileSearch } from 'lucide-react'
 import Badge from '../components/Badge'
 import Card from '../components/Card'
 import Button from '../components/Button'
 import Input from '../components/Input'
+import LiveIndicator from '../components/LiveIndicator'
 import { api } from '../utils/api'
 import { formatDate, formatRelativeTime } from '../utils/formatters'
+import { POLLING_INTERVALS } from '../config/polling'
 import gsap from 'gsap'
 import clsx from 'clsx'
 
@@ -16,9 +18,29 @@ const Searches = () => {
   const [filterTipoProceso, setFilterTipoProceso] = useState('')
   const containerRef = useRef(null)
 
+  const fetchSearches = useCallback(async () => {
+    try {
+      setLoading(true)
+      const params = {}
+      if (filterTipoProceso) params.tipo_proceso = filterTipoProceso
+
+      const response = await api.getSearches(params)
+      if (response.success) {
+        setSearches(response.searches)
+      }
+      setLoading(false)
+    } catch (error) {
+      console.error('Error al cargar búsquedas:', error)
+      setLoading(false)
+    }
+  }, [filterTipoProceso])
+
   useEffect(() => {
     fetchSearches()
-  }, [filterTipoProceso])
+    // Polling constante cada 4 segundos
+    const interval = setInterval(fetchSearches, POLLING_INTERVALS.SEARCHES)
+    return () => clearInterval(interval)
+  }, [fetchSearches])
 
   useEffect(() => {
     if (!loading && containerRef.current) {
@@ -36,23 +58,6 @@ const Searches = () => {
       )
     }
   }, [loading, searches])
-
-  const fetchSearches = async () => {
-    try {
-      setLoading(true)
-      const params = {}
-      if (filterTipoProceso) params.tipo_proceso = filterTipoProceso
-
-      const response = await api.getSearches(params)
-      if (response.success) {
-        setSearches(response.searches)
-      }
-      setLoading(false)
-    } catch (error) {
-      console.error('Error al cargar búsquedas:', error)
-      setLoading(false)
-    }
-  }
 
   const filteredSearches = searches.filter((search) =>
     search.query.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -84,10 +89,16 @@ const Searches = () => {
             Historial de consultas en la base de conocimiento del GTS
           </p>
         </div>
-        <Button onClick={fetchSearches} disabled={loading}>
-          <RefreshCw className={clsx('h-4 w-4', loading && 'animate-spin')} strokeWidth={1.5} />
-          Actualizar
-        </Button>
+        <div className="flex items-center gap-4">
+          <LiveIndicator 
+            interval={POLLING_INTERVALS.SEARCHES}
+            lastUpdate={searches[0]?.created_at}
+          />
+          <Button onClick={fetchSearches} disabled={loading}>
+            <RefreshCw className={clsx('h-4 w-4', loading && 'animate-spin')} strokeWidth={1.5} />
+            Actualizar
+          </Button>
+        </div>
       </div>
 
       {/* Stats Cards */}

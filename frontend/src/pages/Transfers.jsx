@@ -1,11 +1,13 @@
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useState, useRef, useCallback } from 'react'
 import { Search, RefreshCw, ArrowRightLeft, UserCheck } from 'lucide-react'
 import Badge from '../components/Badge'
 import Card from '../components/Card'
 import Button from '../components/Button'
 import Input from '../components/Input'
+import LiveIndicator from '../components/LiveIndicator'
 import { api } from '../utils/api'
 import { formatDate, formatRelativeTime } from '../utils/formatters'
+import { POLLING_INTERVALS } from '../config/polling'
 import gsap from 'gsap'
 import clsx from 'clsx'
 
@@ -17,9 +19,30 @@ const Transfers = () => {
   const [filterArea, setFilterArea] = useState('')
   const containerRef = useRef(null)
 
+  const fetchTransfers = useCallback(async () => {
+    try {
+      setLoading(true)
+      const params = {}
+      if (filterEstado) params.estado = filterEstado
+      if (filterArea) params.area_destino = filterArea
+
+      const response = await api.getTransfers(params)
+      if (response.success) {
+        setTransfers(response.transfers)
+      }
+      setLoading(false)
+    } catch (error) {
+      console.error('Error al cargar transferencias:', error)
+      setLoading(false)
+    }
+  }, [filterEstado, filterArea])
+
   useEffect(() => {
     fetchTransfers()
-  }, [filterEstado, filterArea])
+    // Polling constante cada 4 segundos
+    const interval = setInterval(fetchTransfers, POLLING_INTERVALS.TRANSFERS)
+    return () => clearInterval(interval)
+  }, [fetchTransfers])
 
   useEffect(() => {
     if (!loading && containerRef.current) {
@@ -37,24 +60,6 @@ const Transfers = () => {
       )
     }
   }, [loading, transfers])
-
-  const fetchTransfers = async () => {
-    try {
-      setLoading(true)
-      const params = {}
-      if (filterEstado) params.estado = filterEstado
-      if (filterArea) params.area_destino = filterArea
-
-      const response = await api.getTransfers(params)
-      if (response.success) {
-        setTransfers(response.transfers)
-      }
-      setLoading(false)
-    } catch (error) {
-      console.error('Error al cargar transferencias:', error)
-      setLoading(false)
-    }
-  }
 
   const filteredTransfers = transfers.filter((transfer) =>
     transfer.resumen_consulta.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -96,10 +101,16 @@ const Transfers = () => {
             Consultas derivadas a equipos especializados
           </p>
         </div>
-        <Button onClick={fetchTransfers} disabled={loading}>
-          <RefreshCw className={clsx('h-4 w-4', loading && 'animate-spin')} strokeWidth={1.5} />
-          Actualizar
-        </Button>
+        <div className="flex items-center gap-4">
+          <LiveIndicator 
+            interval={POLLING_INTERVALS.TRANSFERS}
+            lastUpdate={transfers[0]?.created_at}
+          />
+          <Button onClick={fetchTransfers} disabled={loading}>
+            <RefreshCw className={clsx('h-4 w-4', loading && 'animate-spin')} strokeWidth={1.5} />
+            Actualizar
+          </Button>
+        </div>
       </div>
 
       {/* Stats Cards */}

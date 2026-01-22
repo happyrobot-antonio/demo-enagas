@@ -4,24 +4,32 @@ import StatCard from '../components/StatCard'
 import Card from '../components/Card'
 import Badge from '../components/Badge'
 import { DashboardStatsSkeleton } from '../components/Skeleton'
-import { useSocket } from '../context/SocketContext'
+import LiveIndicator from '../components/LiveIndicator'
+import { useRealTimeStats, useRealTimeEmergencies, useRealTimeTickets } from '../hooks/useRealTimeData'
+import { POLLING_INTERVALS } from '../config/polling'
 import { api } from '../utils/api'
 import { formatRelativeTime, getEstadoColor, getRiesgoColor } from '../utils/formatters'
 import gsap from 'gsap'
 import clsx from 'clsx'
 
 const Dashboard = () => {
-  const { stats, connected, newTicket, newEmergency } = useSocket()
-  const [recentTickets, setRecentTickets] = useState([])
-  const [activeEmergencies, setActiveEmergencies] = useState([])
+  // Hooks de tiempo real con polling constante
+  const { stats, loading: statsLoading } = useRealTimeStats(POLLING_INTERVALS.STATS)
+  const { emergencies: activeEmergencies, loading: emergenciesLoading } = useRealTimeEmergencies(POLLING_INTERVALS.EMERGENCIES)
+  const { tickets: recentTickets, loading: ticketsLoading } = useRealTimeTickets(POLLING_INTERVALS.TICKETS)
+  
   const [systemStatus, setSystemStatus] = useState([])
-  const [loading, setLoading] = useState(true)
   const [expandedTicket, setExpandedTicket] = useState(null)
   const containerRef = useRef(null)
 
+  const loading = statsLoading || emergenciesLoading || ticketsLoading
+
   useEffect(() => {
-    fetchDashboardData()
-  }, [newTicket, newEmergency])
+    fetchSystemStatus()
+    // Polling para system status cada 10 segundos
+    const interval = setInterval(fetchSystemStatus, POLLING_INTERVALS.SYSTEM_STATUS)
+    return () => clearInterval(interval)
+  }, [])
 
   useEffect(() => {
     // Stagger animation for initial load
@@ -41,30 +49,14 @@ const Dashboard = () => {
     }
   }, [loading])
 
-  const fetchDashboardData = async () => {
+  const fetchSystemStatus = async () => {
     try {
-      const [ticketsRes, emergenciesRes, systemsRes] = await Promise.all([
-        api.getOpenTickets(),
-        api.getActiveEmergencies(),
-        api.getSystemStatus()
-      ])
-
-      if (ticketsRes.success) {
-        setRecentTickets(ticketsRes.tickets.slice(0, 5))
-      }
-
-      if (emergenciesRes.success) {
-        setActiveEmergencies(emergenciesRes.emergencies)
-      }
-
+      const systemsRes = await api.getSystemStatus()
       if (systemsRes.success) {
         setSystemStatus(systemsRes.systems)
       }
-
-      setLoading(false)
     } catch (error) {
-      console.error('Error al cargar datos del dashboard:', error)
-      setLoading(false)
+      console.error('Error al cargar estado de sistemas:', error)
     }
   }
 
@@ -91,32 +83,40 @@ const Dashboard = () => {
 
       {/* Header */}
       <div className="animate-item">
-        <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
-        <p className="text-muted-foreground mt-1">Monitorización en tiempo real del sistema GTS</p>
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
+            <p className="text-muted-foreground mt-1">Monitorización en tiempo real del sistema GTS</p>
+          </div>
+          <LiveIndicator 
+            interval={POLLING_INTERVALS.STATS}
+            lastUpdate={stats?.last_update || new Date().toISOString()}
+          />
+        </div>
       </div>
 
       {/* Bento Grid - Stats */}
       <div className="animate-item grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard
           title="Tickets Abiertos"
-          value={stats.tickets_abiertos}
+          value={stats?.tickets_abiertos || 0}
           icon={FileText}
-          subtitle={`${stats.tickets_hoy} hoy`}
+          subtitle={`${stats?.tickets_hoy || 0} hoy`}
         />
         <StatCard
           title="Emergencias Activas"
-          value={stats.emergencias_activas}
+          value={activeEmergencies?.length || 0}
           icon={AlertTriangle}
-          subtitle={`${stats.emergencias_hoy} hoy`}
+          subtitle={`${stats?.emergencias_hoy || 0} hoy`}
         />
         <StatCard
           title="Llamadas en Curso"
-          value={stats.llamadas_en_curso}
+          value={stats?.llamadas_en_curso || 0}
           icon={Phone}
         />
         <StatCard
           title="Transferencias"
-          value={stats.transferencias_pendientes}
+          value={stats?.transferencias_pendientes || 0}
           icon={ArrowRightLeft}
         />
       </div>
@@ -187,7 +187,7 @@ const Dashboard = () => {
                 </p>
               ) : (
                 <div className="space-y-2">
-                  {recentTickets.map((ticket) => (
+                  {recentTickets.slice(0, 5).map((ticket) => (
                     <div
                       key={ticket.id}
                       className={clsx(
@@ -285,21 +285,6 @@ const Dashboard = () => {
         </div>
       </div>
 
-      {/* Connection Lost Warning */}
-      {!connected && (
-        <div className="animate-item">
-          <Card className="border-yellow-500/50 bg-yellow-500/5">
-            <Card.Content className="pt-6">
-              <div className="flex items-center gap-3">
-                <AlertTriangle className="h-5 w-5 text-yellow-600" strokeWidth={1.5} />
-                <p className="text-sm text-yellow-600 dark:text-yellow-400">
-                  Conexión perdida. Reintentando conectar al servidor...
-                </p>
-              </div>
-            </Card.Content>
-          </Card>
-        </div>
-      )}
     </div>
   )
 }
