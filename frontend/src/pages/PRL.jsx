@@ -207,168 +207,65 @@ const PRL = () => {
       <div className="flex items-start justify-between">
         <div>
           <div className="flex items-center gap-3 mb-2">
-            <Shield className="h-8 w-8 text-accent-blue" strokeWidth={1.5} />
+            <Shield className="h-8 w-8 text-foreground" strokeWidth={1.5} />
             <h1 className="text-3xl font-bold tracking-tight">Prevención de Riesgos Laborales</h1>
           </div>
           <p className="text-muted-foreground text-sm">
-            Sistema de verificación y control de seguridad en operaciones críticas
+            {activeShift.planta} · Turno {activeShift.nombre} ({activeShift.hora_inicio} - {activeShift.hora_fin}) · Supervisor: {activeShift.supervisor}
+            {stats && ` · ${stats.total_trabajadores} trabajadores`}
           </p>
         </div>
         <LiveIndicator />
       </div>
 
-      {/* Shift Info Card */}
-      <Card className="bg-gradient-to-r from-accent-blue/10 to-transparent border-accent-blue/30">
-        <Card.Content className="pt-6">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            <div>
-              <p className="text-xs font-medium text-muted-foreground mb-1">PLANTA</p>
-              <p className="font-semibold text-lg">{activeShift.planta}</p>
-            </div>
-            <div>
-              <p className="text-xs font-medium text-muted-foreground mb-1">TURNO</p>
-              <p className="font-semibold text-lg">{activeShift.nombre}</p>
-              <p className="text-xs text-muted-foreground font-mono">
-                {activeShift.hora_inicio} - {activeShift.hora_fin}
-              </p>
-            </div>
-            <div>
-              <p className="text-xs font-medium text-muted-foreground mb-1">SUPERVISOR</p>
-              <p className="font-semibold">{activeShift.supervisor}</p>
+      {/* Workers List */}
+      <Card>
+        <Card.Header>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Users className="h-5 w-5" />
+              <h2 className="text-xl font-semibold">Trabajadores del Turno</h2>
             </div>
             {stats && (
-              <div className="flex items-center gap-4">
-                <div className="flex items-center gap-2">
-                  <Users className="h-5 w-5 text-muted-foreground" />
-                  <div>
-                    <p className="text-2xl font-bold">{stats.total_trabajadores}</p>
-                    <p className="text-xs text-muted-foreground">Trabajadores</p>
-                  </div>
-                </div>
+              <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                <span>✓ {stats.completados} Completados</span>
+                <span>⏳ {stats.pendientes} Pendientes</span>
+                <span>📞 {stats.en_curso} En Curso</span>
               </div>
             )}
           </div>
-        </Card.Content>
-      </Card>
+        </Card.Header>
+        <Card.Content>
+          <div ref={containerRef} className="space-y-2">
+            {workers.map((worker) => {
+              const StatusIcon = getStatusIcon(worker)
+              const statusColor = getStatusColor(worker)
 
-      {/* Stats Summary */}
-      {stats && (
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-          <Card className="border-green-500/30 bg-green-500/5">
-            <Card.Content className="pt-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-3xl font-bold text-green-600">{stats.completados}</p>
-                  <p className="text-sm text-muted-foreground mt-1">Completados</p>
-                </div>
-                <CheckCircle2 className="h-8 w-8 text-green-600" />
-              </div>
-            </Card.Content>
-          </Card>
-
-          <Card className="border-yellow-500/30 bg-yellow-500/5">
-            <Card.Content className="pt-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-3xl font-bold text-yellow-600">{stats.pendientes}</p>
-                  <p className="text-sm text-muted-foreground mt-1">Pendientes</p>
-                </div>
-                <Clock className="h-8 w-8 text-yellow-600" />
-              </div>
-            </Card.Content>
-          </Card>
-
-          <Card className="border-blue-500/30 bg-blue-500/5">
-            <Card.Content className="pt-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-3xl font-bold text-blue-600">{stats.en_curso}</p>
-                  <p className="text-sm text-muted-foreground mt-1">En Curso</p>
-                </div>
-                <Phone className="h-8 w-8 text-blue-600" />
-              </div>
-            </Card.Content>
-          </Card>
-
-          <Card className="border-red-500/30 bg-red-500/5">
-            <Card.Content className="pt-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-3xl font-bold text-red-600">{stats.alertas}</p>
-                  <p className="text-sm text-muted-foreground mt-1">Alertas</p>
-                </div>
-                <AlertTriangle className="h-8 w-8 text-red-600" />
-              </div>
-            </Card.Content>
-          </Card>
-
-          <Card className="border-orange-500/30 bg-orange-500/5">
-            <Card.Content className="pt-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-3xl font-bold text-orange-600">{stats.trabajos_criticos}</p>
-                  <p className="text-sm text-muted-foreground mt-1">Críticos</p>
-                </div>
-                <HardHat className="h-8 w-8 text-orange-600" />
-              </div>
-            </Card.Content>
-          </Card>
-        </div>
-      )}
-
-      {/* Workers List */}
-      <div>
-        <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
-          <Users className="h-5 w-5" />
-          Trabajadores del Turno
-        </h2>
-
-        <div ref={containerRef} className="space-y-3">
-          {workers.map((worker) => {
-            const StatusIcon = getStatusIcon(worker)
-            const statusColor = getStatusColor(worker)
-
-            return (
-              <Card
-                key={worker.id}
-                className={clsx(
-                  'worker-card transition-all duration-200',
-                  statusColor === 'danger' && 'border-red-500/50 bg-red-500/5',
-                  statusColor === 'warning' && 'border-yellow-500/50 bg-yellow-500/5',
-                  statusColor === 'success' && 'border-green-500/30'
-                )}
-              >
-                <Card.Content className="pt-6">
+              return (
+                <div
+                  key={worker.id}
+                  className="worker-card border border-border rounded-lg p-4 hover:bg-secondary/50 transition-colors"
+                >
                   <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
                     {/* Status Indicator */}
                     <div className="md:col-span-1 flex justify-center">
-                      <div
+                      <StatusIcon
                         className={clsx(
-                          'w-12 h-12 rounded-full flex items-center justify-center',
-                          statusColor === 'success' && 'bg-green-500/20',
-                          statusColor === 'warning' && 'bg-yellow-500/20',
-                          statusColor === 'danger' && 'bg-red-500/20',
-                          statusColor === 'default' && 'bg-muted'
+                          'h-5 w-5',
+                          statusColor === 'success' && 'text-green-600',
+                          statusColor === 'warning' && 'text-yellow-600',
+                          statusColor === 'danger' && 'text-red-600',
+                          statusColor === 'default' && 'text-muted-foreground'
                         )}
-                      >
-                        <StatusIcon
-                          className={clsx(
-                            'h-6 w-6',
-                            statusColor === 'success' && 'text-green-600',
-                            statusColor === 'warning' && 'text-yellow-600',
-                            statusColor === 'danger' && 'text-red-600',
-                            statusColor === 'default' && 'text-muted-foreground'
-                          )}
-                          strokeWidth={2}
-                        />
-                      </div>
+                        strokeWidth={2}
+                      />
                     </div>
 
                     {/* Worker Info */}
                     <div className="md:col-span-3">
-                      <p className="font-semibold text-lg">{worker.nombre_completo}</p>
+                      <p className="font-semibold">{worker.nombre_completo}</p>
                       <div className="flex items-center gap-2 mt-1">
-                        <span className="text-xs font-mono text-muted-foreground">ID: {worker.employee_id}</span>
+                        <span className="text-xs font-mono text-muted-foreground">{worker.employee_id}</span>
                         <span className="text-xs text-muted-foreground">•</span>
                         <span className="text-xs text-muted-foreground">{worker.empresa}</span>
                       </div>
@@ -376,21 +273,16 @@ const PRL = () => {
 
                     {/* Task */}
                     <div className="md:col-span-4">
-                      <Badge variant={worker.prioridad === 'CRITICA' ? 'danger' : 'default'} className="mb-2">
-                        {worker.tipo_trabajo.replace(/_/g, ' ')}
-                      </Badge>
-                      <p className="text-sm text-muted-foreground line-clamp-2">{worker.descripcion_tarea}</p>
-                      <p className="text-xs text-muted-foreground mt-1 font-mono">{worker.ubicacion_trabajo}</p>
+                      <p className="text-sm font-medium">{worker.tipo_trabajo.replace(/_/g, ' ')}</p>
+                      <p className="text-xs text-muted-foreground mt-1">{worker.descripcion_tarea}</p>
+                      <p className="text-xs text-muted-foreground font-mono">{worker.ubicacion_trabajo}</p>
                     </div>
 
                     {/* Status */}
                     <div className="md:col-span-2">
-                      <p className="text-sm font-medium">{getStatusText(worker)}</p>
-                      {worker.riesgos_identificados && worker.riesgos_identificados.length > 0 && (
-                        <p className="text-xs text-muted-foreground mt-1">
-                          {worker.riesgos_identificados.length} riesgo(s) identificado(s)
-                        </p>
-                      )}
+                      <Badge variant={statusColor === 'success' ? 'success' : statusColor === 'danger' ? 'danger' : 'default'}>
+                        {getStatusText(worker)}
+                      </Badge>
                     </div>
 
                     {/* Action Button */}
@@ -398,12 +290,12 @@ const PRL = () => {
                       {getActionButton(worker)}
                     </div>
                   </div>
-                </Card.Content>
-              </Card>
-            )
-          })}
-        </div>
-      </div>
+                </div>
+              )
+            })}
+          </div>
+        </Card.Content>
+      </Card>
     </div>
   )
 }
